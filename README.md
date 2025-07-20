@@ -1,19 +1,19 @@
 **環境の構成**  
 portfolio  
 ｜  
-｜ー backend <br> <- ruby on rails  
+｜ー backend  <- ruby on rails  
 ｜  ｜  
 ｜  ｜ーdocker  
 ｜     ｜  
 ｜     ｜ー Dockerfile  
 ｜  
-｜ー frontend <br> <- React  
+｜ー frontend  <- React  
 ｜  ｜  
 ｜  ｜ーdocker  
 ｜     ｜  
 ｜     ｜ー Dockerfile  
 ｜  
-｜ーdocker-compose.yml <br> <- 環境設定ファイル  
+｜ーdocker-compose.yml  <- 環境設定ファイル  
 
 
 # 環境構築のセットアップ手順  
