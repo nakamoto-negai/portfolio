@@ -1,0 +1,50 @@
+services:
+  # Railsのコンテナ
+  backend:
+    # イメージはDockerfileを使う
+    build:
+      # Dockerfileのあるディレクトリを指定する
+      context: ./backend
+
+    # コンテナ起動時に実行するコマンド
+    command: bash -c "rails s -b 0.0.0.0"
+
+    # ローカルのファイルとコンテナのファイルを共有する
+    volumes:
+      - ./backend:/myapp
+
+    # Railsのポート番号
+    ports:
+      - 3000:3000
+
+    # PostgreSQLのコンテナが起動してからRailsのコンテナを起動する
+    depends_on:
+      - db
+
+    # 標準入出力を扱う
+    tty: true
+
+    # 標準入力を扱う
+    stdin_open: true
+
+  # PostgreSQLのコンテナ
+  db:
+    # PostgreSQLのイメージを使う
+    image: postgres
+
+    # 環境変数
+    environment:
+      POSTGRES_USER: 'user'
+      POSTGRES_PASSWORD: 'postgres'
+
+    # ポート番号
+    ports:
+      - "5432:5432"
+
+    # データベースのデータを永続的に保存する
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data'
+
+# データベースのデータを永続的に保存する
+volumes:
+  postgres_data:
