@@ -1,19 +1,19 @@
 **環境の構成**  
 portfolio  
 ｜  
-｜ー backend    <- ruby on rails  
+｜ー backend <br> <- ruby on rails  
 ｜  ｜  
 ｜  ｜ーdocker  
 ｜     ｜  
 ｜     ｜ー Dockerfile  
 ｜  
-｜ー frontend   <- React  
+｜ー frontend <br> <- React  
 ｜  ｜  
 ｜  ｜ーdocker  
 ｜     ｜  
 ｜     ｜ー Dockerfile  
 ｜  
-｜ーdocker-compose.yml  <- 環境設定ファイル  
+｜ーdocker-compose.yml <br> <- 環境設定ファイル  
 
 
 # 環境構築のセットアップ手順  
@@ -80,3 +80,23 @@ http://localhost:3000  (Ruby on Railsのページ)
   
 コンテナを停止したいときは  
 docker-compose down  
+
+
+**環境構成（最終）**  
+portfolio  
+｜  
+｜ー backend    <- ruby on rails  
+｜  ｜  
+｜  ｜ーdocker  
+｜  ｜ ｜  
+｜  ｜ ｜ー Dockerfile  
+｜  ｜ーRuby  
+｜  
+｜ー frontend   <- React  
+｜  ｜  
+｜  ｜ーdocker  
+｜  ｜ ｜  
+｜  ｜ ｜ー Dockerfile  
+｜  ｜ーreact    
+｜  
+｜ーdocker-compose.yml
