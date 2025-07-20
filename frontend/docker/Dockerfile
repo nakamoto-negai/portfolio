@@ -1,12 +1,10 @@
-FROM node:22-alpine
+FROM node:lts-alpine
 
-WORKDIR /app
+WORKDIR /var/www/html
 
-# 依存関係レイヤ
 COPY package*.json ./
 RUN npm install
 
-# ソース
 COPY . .
 
 EXPOSE 5173

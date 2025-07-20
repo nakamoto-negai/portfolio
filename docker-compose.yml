@@ -1,50 +1,62 @@
 services:
-  # Railsのコンテナ
+  # ─────────────── Rails バックエンド ───────────────
   backend:
-    # イメージはDockerfileを使う
     build:
-      # Dockerfileのあるディレクトリを指定する
       context: ./backend
-
-    # コンテナ起動時に実行するコマンド
-    command: bash -c "rails s -b 0.0.0.0"
-
-    # ローカルのファイルとコンテナのファイルを共有する
-    volumes:
-      - ./backend:/myapp
-
-    # Railsのポート番号
+      dockerfile: ./docker/Dockerfile
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -b '0.0.0.0'"
+    container_name: rails_api
     ports:
-      - 3000:3000
-
-    # PostgreSQLのコンテナが起動してからRailsのコンテナを起動する
+      - "3000:3000"
+    volumes:
+      - ./backend/Ruby:/var/www/html
     depends_on:
       - db
 
-    # 標準入出力を扱う
-    tty: true
-
-    # 標準入力を扱う
-    stdin_open: true
-
-  # PostgreSQLのコンテナ
-  db:
-    # PostgreSQLのイメージを使う
-    image: postgres
-
-    # 環境変数
+  # ─────────────── React フロント ───────────────
+  frontend:
+    build:
+      context: ./frontend/react
+      dockerfile: ../docker/Dockerfile
+    container_name: react_front
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/react:/var/www/html/app
+      - /var/www/html/app/node_modules
     environment:
-      POSTGRES_USER: 'user'
-      POSTGRES_PASSWORD: 'postgres'
+      - CHOKIDAR_USEPOLLING=true  #ホットリロード
+      - VITE_API_BASE=http://backend:3000
+    depends_on:
+      - backend
 
-    # ポート番号
+  # ─────────────── PostgreSQL ───────────────
+  db:
+    image: postgres:16-alpine
+    container_name: rails_db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: passw@rd
+      POSTGRES_DB: rails_db
     ports:
       - "5432:5432"
-
-    # データベースのデータを永続的に保存する
     volumes:
-      - 'postgres_data:/var/lib/postgresql/data'
+      - dbdata:/var/lib/postgresql/data
+    
 
-# データベースのデータを永続的に保存する
+  # ─────────────── pgAdmin ───────────────
+  pgadmin:
+    image: dpage/pgadmin4:9.5
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@example.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    depends_on:
+      - db
+    ports:
+      - "8888:80"                      # http://localhost:8888
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
 volumes:
-  postgres_data:
+  dbdata:
+  pgadmin-data:
