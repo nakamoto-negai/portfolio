@@ -1,4 +1,4 @@
-**環境の構成**
+**環境の構成**  
 portfolio  
 ｜  
 ｜ー backend    <- ruby on rails  
