@@ -17,7 +17,7 @@ portfolio
 ｜  
 ｜ーdocker-compose.yml
 
-React          フロントエンド部分
-Ruby on rails  バックエンド部分
-PostgreSQL     データベース
+React          フロントエンド部分  
+Ruby on rails  バックエンド部分  
+PostgreSQL     データベース  
 pgAdmin        ブラウザからのデータベース管理
