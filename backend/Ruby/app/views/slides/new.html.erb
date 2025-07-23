@@ -1,0 +1,41 @@
+<h1>新しいスライドを追加</h1>
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><%= link_to "ポートフォリオ", portfolios_path %></li>
+    <li class="breadcrumb-item"><%= link_to @portfolio.title, @portfolio %></li>
+    <li class="breadcrumb-item active">スライド追加</li>
+  </ol>
+</nav>
+
+<%= form_with model: [@portfolio, @slide], local: true, class: "row g-3" do |form| %>
+  <% if @slide.errors.any? %>
+    <div class="col-12">
+      <div class="alert alert-danger">
+        <h6><%= pluralize(@slide.errors.count, "error") %> prohibited this slide from being saved:</h6>
+        <ul class="mb-0">
+          <% @slide.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="col-12">
+    <%= form.label :image_url, "画像URL", class: "form-label" %>
+    <%= form.url_field :image_url, class: "form-control", placeholder: "https://example.com/image.jpg" %>
+    <div class="form-text">画像のURLを入力してください。HTTPSで始まるURLが必要です。</div>
+  </div>
+
+  <div class="col-12">
+    <%= form.label :page_number, "ページ番号", class: "form-label" %>
+    <%= form.number_field :page_number, class: "form-control", min: 1, placeholder: "自動的に設定されます（空欄可）" %>
+    <div class="form-text">空欄の場合、自動的に最後のページ番号が設定されます。</div>
+  </div>
+
+  <div class="col-12">
+    <%= form.submit "追加", class: "btn btn-primary" %>
+    <%= link_to "キャンセル", @portfolio, class: "btn btn-secondary" %>
+  </div>
+<% end %>

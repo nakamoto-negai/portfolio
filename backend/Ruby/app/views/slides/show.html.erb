@@ -1,0 +1,85 @@
+<div class="row">
+  <div class="col-md-12">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><%= link_to "ポートフォリオ", portfolios_path %></li>
+        <li class="breadcrumb-item"><%= link_to @slide.portfolio.title, @slide.portfolio %></li>
+        <li class="breadcrumb-item active">スライド <%= @slide.page_number %></li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <img src="<%= @slide.image_url %>" class="card-img-top" alt="Slide <%= @slide.page_number %>">
+      <div class="card-body">
+        <h5 class="card-title">スライド <%= @slide.page_number %></h5>
+        <p class="card-text">
+          <small class="text-muted">
+            ポートフォリオ: <%= @slide.portfolio.title %>
+          </small>
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="mb-0">ナビゲーション</h6>
+      </div>
+      <div class="card-body">
+        <!-- 前のスライド -->
+        <% if @previous_slide %>
+          <%= link_to portfolio_slide_path(@slide.portfolio, @previous_slide), class: "btn btn-outline-primary btn-sm mb-2 w-100" do %>
+            <i class="fas fa-chevron-left"></i> 前のスライド (<%= @previous_slide.page_number %>)
+          <% end %>
+        <% else %>
+          <button class="btn btn-outline-secondary btn-sm mb-2 w-100" disabled>
+            <i class="fas fa-chevron-left"></i> 前のスライド
+          </button>
+        <% end %>
+        
+        <!-- 次のスライド -->
+        <% if @next_slide %>
+          <%= link_to portfolio_slide_path(@slide.portfolio, @next_slide), class: "btn btn-outline-primary btn-sm mb-3 w-100" do %>
+            次のスライド (<%= @next_slide.page_number %>) <i class="fas fa-chevron-right"></i>
+          <% end %>
+        <% else %>
+          <button class="btn btn-outline-secondary btn-sm mb-3 w-100" disabled>
+            次のスライド <i class="fas fa-chevron-right"></i>
+          </button>
+        <% end %>
+        
+        <hr>
+        
+        <!-- スライド情報 -->
+        <div class="mb-3">
+          <strong>スライド情報:</strong><br>
+          <small class="text-muted">
+            ページ番号: <%= @slide.page_number %><br>
+            <% if @slide.first_slide? %>
+              <span class="badge bg-success">最初のスライド</span>
+            <% end %>
+            <% if @slide.last_slide? %>
+              <span class="badge bg-info">最後のスライド</span>
+            <% end %>
+          </small>
+        </div>
+        
+        <!-- アクション -->
+        <div class="d-grid gap-2">
+          <%= link_to "スライドショー", portfolio_slideshow_path(@slide.portfolio), class: "btn btn-success btn-sm" %>
+          <%= link_to "編集", edit_slide_path(@slide), class: "btn btn-outline-secondary btn-sm" %>
+          <%= link_to "削除", @slide, method: :delete, confirm: "削除しますか？", class: "btn btn-outline-danger btn-sm" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-4">
+  <%= link_to "ポートフォリオに戻る", @slide.portfolio, class: "btn btn-outline-secondary" %>
+</div>

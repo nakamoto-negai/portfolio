@@ -1,20 +1,21 @@
 class Portfolio < ApplicationRecord
   # アソシエーション
-  belongs_to :user
+  belongs_to :user, optional: true  # Userモデルが準備できるまで一時的にoptional
   has_many :slides, dependent: :destroy
-  has_many :likes, dependent: :destroy
-  has_many :liked_users, through: :likes, source: :user
+  # has_many :likes, dependent: :destroy  # 一時的にコメントアウト
+  # has_many :liked_users, through: :likes, source: :user  # 一時的にコメントアウト
   
   # バリデーション
   validates :title, presence: true, length: { maximum: 100 }
   validates :description, presence: true, length: { maximum: 1000 }
   validates :is_public, inclusion: { in: [true, false] }
-  validates :user_id, presence: true
+  # validates :user_id, presence: true  # 一時的にコメントアウト
   
   # スコープ
   scope :published, -> { where(is_public: true) }
   scope :recent, -> { order(created_at: :desc) }
-  scope :popular, -> { joins(:likes).group(:id).order('COUNT(likes.id) DESC') }
+  # scope :popular, -> { joins(:likes).group(:id).order('COUNT(likes.id) DESC') }  # 一時的にコメントアウト
+  scope :popular, -> { order(created_at: :desc) }  # 一時的に作成日順で代替
   
   # インスタンスメソッド
   def published?
@@ -22,7 +23,8 @@ class Portfolio < ApplicationRecord
   end
   
   def likes_count
-    likes.count
+    # likes.count  # 一時的にコメントアウト
+    0  # 固定値を返す
   end
   
   def slides_count

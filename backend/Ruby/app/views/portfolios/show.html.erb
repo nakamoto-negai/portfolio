@@ -1,0 +1,65 @@
+<div class="row">
+  <div class="col-md-8">
+    <h1><%= @portfolio.title %></h1>
+    <p class="lead"><%= @portfolio.description %></p>
+    
+    <div class="mb-3">
+      <span class="badge bg-<%= @portfolio.published? ? 'success' : 'secondary' %>">
+        <%= @portfolio.published? ? '公開中' : '非公開' %>
+      </span>
+      <span class="badge bg-info">
+        <i class="fas fa-images"></i> <%= @portfolio.slides_count %>枚
+      </span>
+      <span class="badge bg-danger">
+        <i class="fas fa-heart"></i> <%= @portfolio.likes_count %>
+      </span>
+    </div>
+  </div>
+  
+  <div class="col-md-4 text-end">
+    <div class="btn-group-vertical w-100" role="group">
+      <%= link_to "スライドショー", portfolio_slideshow_path(@portfolio), class: "btn btn-success" %>
+      <%= link_to "スライド追加", new_portfolio_slide_path(@portfolio), class: "btn btn-primary" %>
+      <%= link_to "編集", edit_portfolio_path(@portfolio), class: "btn btn-outline-secondary" %>
+      <%= link_to "削除", @portfolio, method: :delete, 
+                  confirm: "本当に削除しますか？", 
+                  class: "btn btn-outline-danger" %>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<h2>スライド一覧</h2>
+
+<% if @slides.any? %>
+  <div class="row">
+    <% @slides.each do |slide| %>
+      <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card">
+          <img src="<%= slide.image_url %>" class="card-img-top" alt="Slide <%= slide.page_number %>" style="height: 150px; object-fit: cover;">
+          <div class="card-body text-center">
+            <h6 class="card-title">スライド <%= slide.page_number %></h6>
+            <div class="btn-group btn-group-sm" role="group">
+              <%= link_to "表示", portfolio_slide_path(@portfolio, slide), class: "btn btn-outline-primary" %>
+              <%= link_to "編集", edit_slide_path(slide), class: "btn btn-outline-secondary" %>
+              <%= link_to "削除", slide, method: :delete, 
+                          confirm: "削除しますか？", 
+                          class: "btn btn-outline-danger" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-4">
+    <i class="fas fa-images fa-2x text-muted mb-3"></i>
+    <p class="text-muted">スライドがありません</p>
+    <%= link_to "最初のスライドを追加", new_portfolio_slide_path(@portfolio), class: "btn btn-primary" %>
+  </div>
+<% end %>
+
+<div class="mt-4">
+  <%= link_to "ポートフォリオ一覧に戻る", portfolios_path, class: "btn btn-outline-secondary" %>
+</div>
