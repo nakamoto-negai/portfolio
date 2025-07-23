@@ -1,6 +1,6 @@
 FROM node:lts-alpine
 
-WORKDIR /var/www/html
+WORKDIR /var/www/html/app
 
 COPY package*.json ./
 RUN npm install
