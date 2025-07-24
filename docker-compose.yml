@@ -4,6 +4,8 @@ services:
     build:
       context: ./backend
       dockerfile: ./docker/Dockerfile
+      args:
+        VITE_API_BASE: http://backend:3000
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -b '0.0.0.0'"
     container_name: rails_api
     ports:
