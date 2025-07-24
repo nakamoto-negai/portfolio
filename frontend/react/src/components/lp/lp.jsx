@@ -1,7 +1,8 @@
 import React from 'react';
 import './lp.css';
+import { logoutUser } from '../../api/auth';
 
-const Lpsite = () => {
+const Lpsite = ({ user }) => {
   const handleNavigation = (section) => {
     // ここで各セクションに応じた処理を行う
     switch(section) {
@@ -17,6 +18,14 @@ const Lpsite = () => {
         // 繋がる - コンタクトページなど
         window.location.href = '/contact';
         break;
+      case 'login':
+        // ログインページへ遷移
+        window.location.href = '/login';
+        break;
+      case 'register':
+        // 新規登録ページへ遷移
+        window.location.href = '/register';   
+        break;
       default:
         break;
     }
@@ -26,7 +35,44 @@ const Lpsite = () => {
     <div className="portfolio-container">
       <header className="header">
         <h1 className="title">PORTFOLIO.TSX</h1>
-        <div className="user-id">userId</div>
+        <div className="user-id">
+          {user ? (
+            <div>
+              <span className="nav-link"
+                    onClick={() => window.location.href = '/'}
+              >
+                {user.name}
+              </span>
+              <span className="separator">|</span>
+              <span className="nav-link"
+                    onClick={async () => {
+                      try {
+                        await logoutUser();
+                        window.location.href = '/';
+                      } catch (err) {
+                        console.error('ログアウト失敗:', err.response?.data || err.message);
+                      }
+                    }}
+              >
+                logout
+              </span>
+            </div>
+          ) : (
+            <div>
+              <span className="nav-link" 
+                    onClick={() => handleNavigation('login')}
+              >
+                login
+              </span>
+              <span className="separator">|</span>
+              <span className="nav-link" 
+                    onClick={() => handleNavigation('register')}
+              >
+                register
+              </span>
+            </div>
+          ) }
+        </div>
       </header>
       
       <main className="main-content">
