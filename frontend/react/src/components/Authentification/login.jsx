@@ -6,20 +6,28 @@ import { loginUser } from '../../api/auth';
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // 🔸エラーメッセージ用
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setErrorMessage(''); // 🔸送信前に初期化
+
     try {
       const res = await loginUser({ email, password });
       const user = res.data.user;
 
-      // 親にユーザー情報を渡す
       onLogin(user);
-      // ホーム画面へ遷移
       navigate('/');
     } catch (err) {
       console.error('ログイン失敗:', err.response?.data || err.message);
+
+      // 🔸サーバーからのメッセージを表示（適宜変えてOK）
+      if (err.response?.status === 401) {
+        setErrorMessage('メールアドレスまたはパスワードが間違っています');
+      } else {
+        setErrorMessage('ログインに失敗しました。しばらくしてから再試行してください。');
+      }
     }
   };
 
@@ -27,6 +35,10 @@ export default function Login({ onLogin }) {
     <div className="login-wrapper">
       <div className="login-card">
         <h1 className="login-title">ログイン</h1>
+
+        {/* 🔸エラーメッセージの表示 */}
+        {errorMessage && <p className="login-error">{errorMessage}</p>}
+
         <form onSubmit={handleSubmit} className="login-form">
           <label>
             メールアドレス
