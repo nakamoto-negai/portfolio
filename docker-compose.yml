@@ -27,6 +27,7 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend/react:/var/www/html/app
+      - /var/www/html/app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true  #ホットリロード
     depends_on:
