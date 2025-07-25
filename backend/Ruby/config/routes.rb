@@ -13,7 +13,9 @@ Rails.application.routes.draw do
   # CRUD処理
   namespace :api do
     namespace :v1 do
-      resources :portfolios, only: [:index, :show, :create, :update, :destroy]
+      resources :portfolios, only: [:index, :show, :create, :update, :destroy] do
+        resources :slides, only: [:index, :create, :update, :destroy]
+      end
     end
   end
 end
