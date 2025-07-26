@@ -1,6 +1,7 @@
 # app/controllers/api/messages_controller.rb
 module Api
   class MessagesController < ApplicationController
+    skip_before_action :verify_authenticity_token
     before_action :authenticate_user!            # ★既存の Cookie-Auth を使う
     before_action :set_other_user
 

@@ -11,6 +11,9 @@ Rails.application.routes.draw do
     resources :conversations, only: [:index] do
       resources :messages, only: %i[index create]
     end
+    # ユーザー一覧
+    resources :users, only: [:index]
+    resources :users, only: [:show]
   end
 
   mount ActionCable.server => '/cable'

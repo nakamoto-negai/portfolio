@@ -8,7 +8,7 @@ export const fetchConversations = () =>
 
 // メッセージ一覧API
 export const fetchMessages = (partnerId) =>
-  apiClient.get(`/conversations/${partnerId}/messages`);
+  apiClient.get(`/conversations/${partnerId}/messages`).then((res) => res.data);
 
 // メッセージ送信API
 export const postMessage = (partnerId, content) =>

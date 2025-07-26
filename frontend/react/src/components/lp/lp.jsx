@@ -1,10 +1,19 @@
-import React from 'react';
+import { useState, useEffect, use } from 'react';
 import './lp.css';
 import { logoutUser } from '../../api/auth';
 import { useAuth } from '../../hooks/useAuth'; 
+import { fetchUsers } from '../../api/users';
+import { useNavigate } from 'react-router-dom';
 
 const Lpsite = () => {
   const { user, loading, setUser } = useAuth();
+  const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // ユーザー一覧を取得するAPIを呼び出す
+    fetchUsers().then((res) => setUsers(res.data));
+  }, []);
 
   const handleNavigation = (section) => {
     // ここで各セクションに応じた処理を行う
@@ -33,6 +42,10 @@ const Lpsite = () => {
         // メッセージページへ遷移
         window.location.href = '/messages';
         break;
+      case 'home':
+        // ホームページへ遷移
+        window.location.href = '/';
+        break;
       default:
         break;
     }
@@ -60,7 +73,7 @@ const Lpsite = () => {
           {user ? (
             <div>
               <span className="nav-link"
-                    onClick={() => handleNavigation('messages')}
+                    onClick={() => handleNavigation('home')}
               >
                 {user.name}
               </span>
@@ -77,6 +90,12 @@ const Lpsite = () => {
             </div>
           ) : (
             <div>
+              <span className="nav-link" 
+                    onClick={() => handleNavigation('messages')}
+              >
+                messages
+              <span className="separator">|</span>
+              </span>  
               <span className="nav-link" 
                     onClick={() => handleNavigation('login')}
               >
@@ -126,6 +145,17 @@ const Lpsite = () => {
               繋がる
             </span>
           </div>
+          <h1>ようこそ {user?.name} さん</h1>
+          <h2>チャット可能なユーザー一覧</h2>
+          <ul>
+            {users.map((u) => (
+              <li key={u.id}>
+                <button onClick={() => navigate(`/messages?partner_id=${u.id}`)}>
+                  {u.name}
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       </main>
     </div>

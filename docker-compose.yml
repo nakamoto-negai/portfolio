@@ -63,7 +63,7 @@ services:
 
   # ─────────────── Redis ───────────────
   redis:
-    image: redis:latest
+    image: redis:7-alpine
     container_name: redis_server
     ports:
       - "6379:6379"
