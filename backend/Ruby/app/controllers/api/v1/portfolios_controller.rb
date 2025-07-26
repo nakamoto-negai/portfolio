@@ -1,16 +1,46 @@
 class Api::V1::PortfoliosController < ApplicationController
-skip_before_action :verify_authenticity_token # ← この行を追加
+skip_before_action :verify_authenticity_token 
   before_action :set_portfolio, only: [:show, :update, :destroy]
 
   # GET /api/v1/portfolios
+  # 全ポートフォリオ取得
   def index
     @portfolios = Portfolio.all
     render json: @portfolios
   end
 
+  # GET /api/v1/portfolios/published
+  # 公開ポートフォリオ一覧取得
+  def published
+    @portfolios = Portfolio.published.includes(:user).recent
+    render json: @portfolios.as_json(
+      only: [:id, :title, :description, :created_at, :updated_at],
+      include: { user: { only: [:id, :name] } }
+    )
+  end
+
+  # GET /api/v1/portfolios/my
+  # 自分のポートフォリオ一覧取得
+  def my
+    unless current_user
+      render json: { error: 'ログインが必要です' }, status: :unauthorized
+      return
+    end
+    
+    @portfolios = current_user.portfolios.includes(:slides).recent
+    render json: @portfolios.as_json(
+      only: [:id, :title, :description, :is_public, :created_at, :updated_at],
+      methods: [:slides_count]
+    )
+  end
+
   # GET /api/v1/portfolios/:id
+  # ポートフォリオ詳細取得
   def show
-    render json: @portfolio
+    render json: @portfolio.as_json(
+      only: [:id, :title, :description, :is_public, :created_at, :updated_at],
+      include: { user: { only: [:id, :name] } }
+    )
   end
 
   # POST /api/v1/portfolios
@@ -40,9 +70,9 @@ skip_before_action :verify_authenticity_token # ← この行を追加
 
   private
 
-  #共通の処理をまとめる
+  # ポートフォリオ取得
   def set_portfolio
-    @portfolio = Portfolio.find(params[:id])
+    @portfolio = Portfolio.includes(:user).find(params[:id])
   end
 
   # Strong Parameters
