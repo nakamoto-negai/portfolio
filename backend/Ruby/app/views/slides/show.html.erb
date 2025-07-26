@@ -71,9 +71,9 @@
         
         <!-- アクション -->
         <div class="d-grid gap-2">
-          <%= link_to "スライドショー", portfolio_slideshow_path(@slide.portfolio), class: "btn btn-success btn-sm" %>
+          <%= link_to "スライドショー", slideshow_portfolio_path(@slide.portfolio), class: "btn btn-success btn-sm" %>
           <%= link_to "編集", edit_slide_path(@slide), class: "btn btn-outline-secondary btn-sm" %>
-          <%= link_to "削除", @slide, method: :delete, confirm: "削除しますか？", class: "btn btn-outline-danger btn-sm" %>
+          <%= link_to "削除", @slide, data: { method: :delete, confirm: "削除しますか？"}, class: "btn btn-outline-danger btn-sm"  %>
         </div>
       </div>
     </div>

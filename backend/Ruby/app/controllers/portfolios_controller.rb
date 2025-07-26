@@ -1,6 +1,6 @@
 class PortfoliosController < ApplicationController
-  before_action :set_portfolio, only: [:show, :edit, :update, :destroy]
-  
+  before_action :set_portfolio, only: [:show, :edit, :update, :destroy, :slideshow, :extract_main_image]
+
   # GET /portfolios
   def index
     @portfolios = Portfolio.published.recent.includes(:slides,:powerpoints)

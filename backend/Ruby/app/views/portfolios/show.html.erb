@@ -180,7 +180,7 @@
           <div class="d-grid gap-2">
             <!-- スライドショー -->
             <% if @portfolio.ordered_slides.any? %>
-              <%= link_to portfolio_slideshow_path(@portfolio), 
+              <%= link_to slideshow_portfolio_path(@portfolio), 
                           class: "btn btn-success" do %>
                 <i class="fas fa-play me-2"></i>スライドショー開始
               <% end %>
