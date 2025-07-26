@@ -4,9 +4,11 @@ import { logoutUser } from '../../api/auth';
 import { useAuth } from '../../hooks/useAuth'; 
 import { fetchUsers } from '../../api/users';
 import { useNavigate } from 'react-router-dom';
+import ProfileSidebar from '../Profile/ProfileSidebar';
 
 const Lpsite = () => {
   const { user, loading, setUser } = useAuth();
+  const [isProfileSidebarOpen, setIsProfileSidebarOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
 
@@ -15,36 +17,44 @@ const Lpsite = () => {
     fetchUsers().then((res) => setUsers(res.data));
   }, []);
 
+  const handleProfileMenuClick = () => {
+    setIsProfileSidebarOpen(true);
+  };
+
+  const handleProfileSidebarClose = () => {
+    setIsProfileSidebarOpen(false);
+  };
+
   const handleNavigation = (section) => {
     // ここで各セクションに応じた処理を行う
     switch(section) {
       case 'show':
         // 魅せる - 作品ギャラリーページなど
-        window.location.href = '/gallery';
+        navigate('/gallery');
         break;
       case 'create':
-        // 創る - 制作プロセスや技術ページなど
-        window.location.href = '/works';
+        // 創る - SlideEditorページへ遷移
+        navigate('/SlideEditor');
         break;
       case 'connect':
         // 繋がる - コンタクトページなど
-        window.location.href = '/contact';
+        navigate('/contact');
         break;
       case 'login':
         // ログインページへ遷移
-        window.location.href = '/login';
+        navigate('/login');
         break;
       case 'register':
         // 新規登録ページへ遷移
-        window.location.href = '/register';   
+        navigate('/register');   
         break;
       case 'messages':
         // メッセージページへ遷移
-        window.location.href = '/messages';
+        navigate('/message')
         break;
       case 'home':
         // ホームページへ遷移
-        window.location.href = '/';
+        navigate('/')
         break;
       default:
         break;
@@ -61,19 +71,24 @@ const Lpsite = () => {
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>; // ローディング中の表示
-  }
 
+  if (loading) return <div>Loading...</div>; // ローディング中の表示
+  
   return (
     <div className="portfolio-container">
       <header className="header">
         <h1 className="title">PORTFOLIO.TSX</h1>
+        {/* 三点リーダーメニューボタン（ログイン時のみ表示） */}
+        {user && (
+          <button className="menu-button" onClick={handleProfileMenuClick}>
+            ⋯
+          </button>
+        )}
         <div className="user-id">
           {user ? (
             <div>
               <span className="nav-link"
-                    onClick={() => handleNavigation('home')}
+                onClick={() => handleNavigation(`/users/${user.id}`)}
               >
                 {user.name}
               </span>
@@ -111,6 +126,14 @@ const Lpsite = () => {
           ) }
         </div>
       </header>
+      
+      {/* プロフィールサイドバー */}
+      <ProfileSidebar 
+        isOpen={isProfileSidebarOpen}
+        onClose={handleProfileSidebarClose}
+        userId={user?.id}
+        currentUser={user}
+      />
       
       <main className="main-content">
         <div className="image-container">

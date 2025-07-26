@@ -66,3 +66,15 @@ body {
 .register-form button:hover {
   background-color: #aaa;
 }
+
+.error-messages {
+  margin-bottom: 1em;
+  padding: 0;
+  list-style: none;
+  color: red;
+}
+
+.error-text {
+  margin: 0.25em 0;
+  font-size: 0.9em;
+}

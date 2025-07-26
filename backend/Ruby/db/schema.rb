@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_25_121234) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_26_020431) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -57,6 +57,23 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_25_121234) do
     t.index ["portfolio_id"], name: "index_slides_on_portfolio_id"
   end
 
+  create_table "test_portfolios", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.boolean "is_public"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "test_slides", force: :cascade do |t|
+    t.bigint "portfolio_id", null: false
+    t.string "image_url"
+    t.integer "page_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["portfolio_id"], name: "index_test_slides_on_portfolio_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "email"
@@ -64,6 +81,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_25_121234) do
     t.text "profile"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "skill"
+    t.text "experience"
+    t.string "github_url"
+    t.string "twitter_url"
   end
 
   add_foreign_key "likes", "portfolios"
@@ -72,4 +93,5 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_25_121234) do
   add_foreign_key "messages", "users", column: "sender_id"
   add_foreign_key "portfolios", "users"
   add_foreign_key "slides", "portfolios"
+  add_foreign_key "test_slides", "portfolios"
 end
