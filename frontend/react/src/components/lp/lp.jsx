@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // useNavigateをインポート
 import './lp.css';
 import { logoutUser } from '../../api/auth';
+import ProfileSidebar from '../Profile/ProfileSidebar';
 
 const Lpsite = ({ user }) => {
   const navigate = useNavigate(); // useNavigateフックを使用
+  const [isProfileSidebarOpen, setIsProfileSidebarOpen] = useState(false);
+
+  const handleProfileMenuClick = () => {
+    setIsProfileSidebarOpen(true);
+  };
+
+  const handleProfileSidebarClose = () => {
+    setIsProfileSidebarOpen(false);
+  };
 
   const handleNavigation = (section) => {
     // ここで各セクションに応じた処理を行う
@@ -48,6 +58,12 @@ const Lpsite = ({ user }) => {
     <div className="portfolio-container">
       <header className="header">
         <h1 className="title">PORTFOLIO.TSX</h1>
+        {/* 三点リーダーメニューボタン（ログイン時のみ表示） */}
+        {user && (
+          <button className="menu-button" onClick={handleProfileMenuClick}>
+            ⋯
+          </button>
+        )}
         <div className="user-id">
           {user ? (
             <div>
@@ -80,6 +96,14 @@ const Lpsite = ({ user }) => {
           ) }
         </div>
       </header>
+      
+      {/* プロフィールサイドバー */}
+      <ProfileSidebar 
+        isOpen={isProfileSidebarOpen}
+        onClose={handleProfileSidebarClose}
+        userId={user?.id}
+        currentUser={user}
+      />
       
       <main className="main-content">
         <div className="image-container">
