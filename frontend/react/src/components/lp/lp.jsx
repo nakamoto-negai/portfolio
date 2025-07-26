@@ -1,20 +1,35 @@
 import { useState, useEffect, use } from 'react';
 import './lp.css';
-import { logoutUser } from '../../api/auth';
+import { checkLoginStatus, logoutUser } from '../../api/auth';
 import { useAuth } from '../../hooks/useAuth'; 
 import { fetchUsers } from '../../api/users';
 import { useNavigate } from 'react-router-dom';
 import ProfileSidebar from '../Profile/ProfileSidebar';
 
 const Lpsite = () => {
-  const { user, loading, setUser } = useAuth();
+  const { user, setUser } = useAuth();
   const [isProfileSidebarOpen, setIsProfileSidebarOpen] = useState(false);
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  
 
   useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const res = await checkLoginStatus();
+        if (res.data) {
+          // ログイン済みなら何か状態をセットしてもOK
+        }
+      } catch (err) {
+        console.error("ログイン状態の確認失敗", err);
+      } finally {
+        setLoading(false); // 成功でも失敗でもローディングは終了
+      }
+    };
     // ユーザー一覧を取得するAPIを呼び出す
     fetchUsers().then((res) => setUsers(res.data));
+    checkStatus();
   }, []);
 
   const handleProfileMenuClick = () => {
@@ -70,14 +85,13 @@ const Lpsite = () => {
       console.error('ログアウト失敗:', err.response?.data || err.message);
     }
   };
-
-
   
+  if(loading) return <div> Loading... </div>
   
   return (
     <div className="portfolio-container">
       <header className="header">
-        <h1 className="title">PORTFOLIO.TSX</h1>
+        <h1 className="title">POTORINK</h1>
         {/* 三点リーダーメニューボタン（ログイン時のみ表示） */}
         {user && (
           <button className="menu-button" onClick={handleProfileMenuClick}>
