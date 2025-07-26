@@ -8,8 +8,8 @@ module Api
     # GET /api/conversations/:conversation_id/messages
     def index
       messages = Message.between_users(current_user, @other_user)
-                         .recent
-                         .limit(100)             # ページングはお好みで
+                         .order(:created_at)
+                         .limit(100)        
       render json: messages, each_serializer: MessageSerializer
     end
 

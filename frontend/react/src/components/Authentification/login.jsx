@@ -9,12 +9,14 @@ export default function Login({ onLogin }) {
   const [errorMessage, setErrorMessage] = useState(''); // 🔸エラーメッセージ用
   const navigate = useNavigate();
 
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrorMessage(''); // 🔸送信前に初期化
 
     try {
       const res = await loginUser({ email, password });
+
       navigate('/');
     } catch (err) {
       console.error('ログイン失敗:', err.response?.data || err.message);
