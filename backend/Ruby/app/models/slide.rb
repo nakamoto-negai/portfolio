@@ -2,9 +2,11 @@ class Slide < ApplicationRecord
   # アソシエーション
   belongs_to :portfolio
   
+  # ActiveStorage
+  has_one_attached :image
+
   # バリデーション
   validates :portfolio_id, presence: true
-  validates :image_url, presence: true, format: { with: URI::DEFAULT_PARSER.make_regexp(%w[http https]) }
   validates :page_number, presence: true, uniqueness: { scope: :portfolio_id }
   validates :page_number, numericality: { greater_than: 0 }
   

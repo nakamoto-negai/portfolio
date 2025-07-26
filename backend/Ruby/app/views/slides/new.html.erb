@@ -8,7 +8,7 @@
   </ol>
 </nav>
 
-<%= form_with model: [@portfolio, @slide], local: true, class: "row g-3" do |form| %>
+<%= form_with model: [@portfolio, @slide], local: true, class: "row g-3", multipart: true do |form| %>
   <% if @slide.errors.any? %>
     <div class="col-12">
       <div class="alert alert-danger">
@@ -23,11 +23,12 @@
   <% end %>
 
   <div class="col-12">
-    <%= form.label :image_url, "画像URL", class: "form-label" %>
-    <%= form.url_field :image_url, class: "form-control", placeholder: "https://example.com/image.jpg" %>
-    <div class="form-text">画像のURLを入力してください。HTTPSで始まるURLが必要です。</div>
+    <%= form.label :image, "画像ファイル", class: "form-label" %>
+    <%= form.file_field :image, class: "form-control" %>
+    <div class="form-text">画像ファイルをアップロードする場合はこちらから選択してください。</div>
   </div>
 
+ 
   <div class="col-12">
     <%= form.label :page_number, "ページ番号", class: "form-label" %>
     <%= form.number_field :page_number, class: "form-control", min: 1, placeholder: "自動的に設定されます（空欄可）" %>

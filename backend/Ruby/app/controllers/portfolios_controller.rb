@@ -39,6 +39,12 @@ class PortfoliosController < ApplicationController
     @portfolio.powerpoint_files = params[:portfolio][:powerpoint_files] if params[:portfolio][:powerpoint_files]
     
     if @portfolio.save
+      if params[:portfolio][:powerpoint_files]
+        # 1つ目のファイルをPowerPointモデルとして保存
+        powerpoint = @portfolio.powerpoints.create(file: params[:portfolio][:powerpoint_files].first)
+        PowerpointImageExtractorService.new(@portfolio, powerpoint).extract_main_image
+        PowerpointImageExtractorService.new(@portfolio, powerpoint).extract_all_slide_images
+      end
       redirect_to @portfolio, notice: 'ポートフォリオが正常に作成されました。'
     else
       render :new, status: :unprocessable_entity

@@ -123,9 +123,10 @@
           <% @portfolio.ordered_slides.each do |slide| %>
             <div class="col-md-6 col-lg-4 mb-4">
               <div class="card slide-card h-100">
-                <% if slide.image_url %>
-                  <%= image_tag slide.image_url, class: "card-img-top slide-thumbnail", 
-                                alt: "スライド #{slide.page_number}" %>
+                <% if slide.image.attached? %>
+                  <%= image_tag slide.image, class: "card-img-top slide-thumbnail", alt: "スライド #{slide.page_number}" %>
+                <% elsif slide.image_url.present? %>
+                  <%= image_tag slide.image_url, class: "card-img-top slide-thumbnail", alt: "スライド #{slide.page_number}" %>
                 <% else %>
                   <div class="card-img-top slide-thumbnail bg-light d-flex align-items-center justify-content-center">
                     <i class="fas fa-image fa-2x text-muted"></i>
