@@ -1,0 +1,28 @@
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem 2rem;
+}
+
+.chat-header {
+  margin-bottom: 1.5rem;
+}
+
+.chat-partner-name {
+  font-size: 2.5rem;
+}
+
+.chat-subtitle {
+  font-size: 1.125rem;
+}
+
+.chat-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.chat-input-area {
+  margin-top: 1rem;
+}

@@ -1,0 +1,24 @@
+.sidebar {
+  width: 16rem; /* 64 */
+  background-color: #2b2d33;
+  height: 100%;
+  padding: 2rem;
+}
+
+.sidebar-title {
+  font-size: 3rem; /* text-5xl */
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.sidebar-subtitle {
+  font-size: 1.5rem; /* text-2xl */
+  margin-bottom: 1rem;
+  color: #d0ccb9;
+}
+
+.conversation-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

@@ -1,0 +1,29 @@
+.message-input-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.message-input-field {
+  flex-grow: 1;
+  background-color: #3d3f44;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  outline: none;
+  color: #d0ccb9;
+}
+
+.message-input-field::placeholder {
+  color: #d0ccb9;
+}
+
+.message-send-button {
+  color: #d0ccb9;
+  padding: 0 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.message-send-button:hover {
+  color: #ffffff;
+}

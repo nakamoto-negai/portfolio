@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // useNavigateをインポート
+import { useState, useEffect, use } from 'react';
 import './lp.css';
 import { logoutUser } from '../../api/auth';
+import { useAuth } from '../../hooks/useAuth'; 
+import { fetchUsers } from '../../api/users';
+import { useNavigate } from 'react-router-dom';
 import ProfileSidebar from '../Profile/ProfileSidebar';
 
-const Lpsite = ({ user }) => {
-  const navigate = useNavigate(); // useNavigateフックを使用
+const Lpsite = () => {
+  const { user, loading, setUser } = useAuth();
   const [isProfileSidebarOpen, setIsProfileSidebarOpen] = useState(false);
+  const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // ユーザー一覧を取得するAPIを呼び出す
+    fetchUsers().then((res) => setUsers(res.data));
+  }, []);
 
   const handleProfileMenuClick = () => {
     setIsProfileSidebarOpen(true);
@@ -39,6 +48,14 @@ const Lpsite = ({ user }) => {
         // 新規登録ページへ遷移
         navigate('/register');   
         break;
+      case 'messages':
+        // メッセージページへ遷移
+        navigate('/message')
+        break;
+      case 'home':
+        // ホームページへ遷移
+        navigate('/')
+        break;
       default:
         break;
     }
@@ -47,13 +64,16 @@ const Lpsite = ({ user }) => {
   const handleLogout = async () => {
     try {
       await logoutUser();
-      navigate('/'); // ログアウト後はホームページに遷移
-      window.location.reload(); // ユーザー状態をリセットするためリロード
+      setUser(null); // ログアウト後にユーザー情報をクリア
+      window.location.href = '/'; // ホームへリダイレクト
     } catch (err) {
       console.error('ログアウト失敗:', err.response?.data || err.message);
     }
   };
 
+
+  if (loading) return <div>Loading...</div>; // ローディング中の表示
+  
   return (
     <div className="portfolio-container">
       <header className="header">
@@ -68,19 +88,29 @@ const Lpsite = ({ user }) => {
           {user ? (
             <div>
               <span className="nav-link"
-                    onClick={() => window.location.href = `/users/${user.id}`}
+                onClick={() => handleNavigation(`/users/${user.id}`)}
               >
                 {user.name}
               </span>
               <span className="separator">|</span>
-              <span className="nav-link"
-                    onClick={handleLogout}
+              <span className="nav-link" 
+                    onClick={() => handleNavigation('messages')}
               >
+                messages
+              </span>      
+              <span className="separator">|</span>
+              <span className="nav-link" onClick={handleLogout}>
                 logout
               </span>
             </div>
           ) : (
             <div>
+              <span className="nav-link" 
+                    onClick={() => handleNavigation('messages')}
+              >
+                messages
+              <span className="separator">|</span>
+              </span>  
               <span className="nav-link" 
                     onClick={() => handleNavigation('login')}
               >
@@ -138,6 +168,17 @@ const Lpsite = ({ user }) => {
               繋がる
             </span>
           </div>
+          <h1>ようこそ {user?.name} さん</h1>
+          <h2>チャット可能なユーザー一覧</h2>
+          <ul>
+            {users.map((u) => (
+              <li key={u.id}>
+                <button onClick={() => navigate(`/messages?partner_id=${u.id}`)}>
+                  {u.name}
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       </main>
     </div>

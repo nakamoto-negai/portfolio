@@ -30,8 +30,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_26_020431) do
     t.datetime "read_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["receiver_id", "read_at"], name: "index_messages_on_receiver_id_and_read_at"
     t.index ["receiver_id"], name: "index_messages_on_receiver_id"
+    t.index ["sender_id", "receiver_id", "created_at"], name: "index_messages_on_sender_id_and_receiver_id_and_created_at"
     t.index ["sender_id"], name: "index_messages_on_sender_id"
+    t.check_constraint "char_length(content) <= 1000", name: "content_len"
+    t.check_constraint "sender_id <> receiver_id", name: "sender_receiver_diff"
   end
 
   create_table "portfolios", force: :cascade do |t|

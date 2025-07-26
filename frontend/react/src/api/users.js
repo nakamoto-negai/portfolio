@@ -1,13 +1,15 @@
-import axios from 'axios';
+import apiClient from './apiClient';
 
-const API = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
+export const fetchUsers = () => apiClient.get('/users');
+
+export const fetchUserById = (id) => apiClient.get(`/users/${id}`);
 
 // ユーザー情報を取得
 export const getUser = (userId) => {
-  return axios.get(`${API}/api/v1/users/${userId}`, { withCredentials: true });
+  return apiClient.get(`${API}/api/v1/users/${userId}`, { withCredentials: true });
 };
 
 // ユーザー情報を更新
 export const updateUser = (userId, userData) => {
-  return axios.put(`${API}/api/v1/users/${userId}`, { user: userData }, { withCredentials: true });
+  return apiClient.put(`${API}/api/v1/users/${userId}`, { user: userData }, { withCredentials: true });
 };

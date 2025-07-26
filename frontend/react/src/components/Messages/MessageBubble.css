@@ -1,0 +1,30 @@
+.message-container {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+}
+
+.message-container.me {
+  justify-content: end;
+}
+
+.message-container.other {
+  justify-content: start;
+}
+
+.message-bubble {
+  max-width: 60%;
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+  white-space: pre-line;
+}
+
+.message-bubble.me {
+  background-color: #3d3f44;
+  color: #d0ccb9;
+}
+
+.message-bubble.other {
+  background-color: #c4beab;
+  color: #1e1f23;
+}

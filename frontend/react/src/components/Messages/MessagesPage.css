@@ -1,0 +1,16 @@
+.messages-page {
+  display: flex;
+  height: 100vh;
+  background-color: #1e1f23;
+  color: #d0ccb9;
+  font-family: serif;
+}
+
+.chat-area {
+  flex-grow: 1;
+}
+
+.login-warning,
+.chat-placeholder {
+  padding: 2rem;
+}
