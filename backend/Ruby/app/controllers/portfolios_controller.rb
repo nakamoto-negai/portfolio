@@ -3,22 +3,29 @@ class PortfoliosController < ApplicationController
   
   # GET /portfolios
   def index
-    @portfolios = Portfolio.published.recent.includes(:slides)
+    @portfolios = Portfolio.published.recent.includes(:slides,:powerpoints)
   end
   
   # GET /portfolios/:id
   def show
-    @slides = @portfolio.ordered_slides
+    @powerpoints = @portfolio.powerpoints
   end
+
+   
   
   # GET /portfolios/new
   def new
     @portfolio = Portfolio.new
   end
+
+
   
   # POST /portfolios
   def create
     @portfolio = Portfolio.new(portfolio_params)
+    
+    # PowerPointファイルを一時的に保存
+    @portfolio.powerpoint_files = params[:portfolio][:powerpoint_files] if params[:portfolio][:powerpoint_files]
     
     if @portfolio.save
       redirect_to @portfolio, notice: 'ポートフォリオが正常に作成されました。'
