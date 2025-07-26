@@ -52,7 +52,7 @@ const Lpsite = ({ user }) => {
           {user ? (
             <div>
               <span className="nav-link"
-                    onClick={() => navigate('/')}
+                    onClick={() => window.location.href = `/users/${user.id}`}
               >
                 {user.name}
               </span>
