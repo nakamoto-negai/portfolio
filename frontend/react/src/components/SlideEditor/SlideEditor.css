@@ -24,7 +24,7 @@ body {
 }
 
 /* サイドバー */
-.sidebar {
+.sidebar2 {
   width: 280px;
   background: white;
   border-right: 1px solid #e1e8ed;
@@ -34,20 +34,20 @@ body {
   z-index: 10;
 }
 
-.sidebar-header {
+.sidebar2-header {
   padding: 16px;
   border-bottom: 1px solid #e1e8ed;
   background: #f8f9fa;
 }
 
-.sidebar-title {
+.sidebar2-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
 }
 
-.sidebar-title h3 {
+.sidebar2-title h3 {
   color: #2c3e50;
   font-size: 18px;
   font-weight: 600;
@@ -60,7 +60,7 @@ body {
   font-weight: normal;
 }
 
-.sidebar-buttons {
+.sidebar2-buttons {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;

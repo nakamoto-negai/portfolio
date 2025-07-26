@@ -1679,13 +1679,13 @@ const SlideEditor = () => {
       />
 
       {/* サイドバー - スライド一覧 */}
-      <div className="sidebar">
-        <div className="sidebar-header">
-          <div className="sidebar-title">
+      <div className="sidebar2">
+        <div className="sidebar2-header">
+          <div className="sidebar2-title">
             <h3>スライド</h3>
             <span className="slide-count">({slides.length}枚)</span>
           </div>
-          <div className="sidebar-buttons">
+          <div className="sidebar2-buttons">
             <button 
               className="template-btn"
               onClick={() => setShowTemplateModal(true)}

@@ -16,11 +16,11 @@ const MessageInput = ({ partnerId }) => {
     <form onSubmit={submit} className="message-input-form">
       <input
         className="message-input-field"
-        placeholder="Message"
+        placeholder="メッセージを入力してください"
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
-      <button className="message-send-button">✈️</button>
+      <button className="message-send-button">➤</button>
     </form>
   );
 };
