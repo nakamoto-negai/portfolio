@@ -11,7 +11,18 @@ class PortfoliosController < ApplicationController
     @powerpoints = @portfolio.powerpoints
   end
 
-   
+   def slideshow
+    @slides = @portfolio.ordered_slides
+    render layout: 'slideshow' # 専用のレイアウトを使用
+  end
+
+  def extract_main_image
+    if @portfolio.extract_main_image_from_powerpoint!
+      redirect_to @portfolio, notice: 'メイン画像を正常に抽出しました。'
+    else
+      redirect_to @portfolio, alert: 'メイン画像の抽出に失敗しました。PowerPointファイルに画像が含まれていない可能性があります。'
+    end
+  end
   
   # GET /portfolios/new
   def new

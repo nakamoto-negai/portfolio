@@ -7,21 +7,19 @@ Rails.application.routes.draw do
 
   # Portfolio routes with nested slides
   resources :portfolios do
+    resources :slides
     resources :powerpoints do
       member do
         get :download
-        get :slideshow
+        get :preview
       end
     end
-  end  # データベースを削除・再作成
-
-  resources :slides
-    resources :powerpoints do
-      member do
-        get :download
-        get :slideshow  # PowerPointsControllerのslideshowアクション（必要に応じて）
-      end
+    # スライドショー機能を追加
+    member do
+      get :slideshow
+      post :extract_main_image
     end
+  end
 
 
   # Individual slide routes for edit/update/destroy

@@ -4,6 +4,9 @@ class Portfolio < ApplicationRecord
   has_many :slides, dependent: :destroy
   has_many :powerpoints, dependent: :destroy
   
+  # Active Storage for main image
+  has_one_attached :main_image
+
   # バリデーション
   validates :title, presence: true, length: { maximum: 100 }
   validates :description, presence: true, length: { maximum: 1000 }
@@ -83,6 +86,25 @@ class Portfolio < ApplicationRecord
     slides.order(:page_number).first
   end
 
+  # メイン画像関連のメソッド
+  def has_main_image?
+    main_image.attached?
+  end
+  
+  def main_image_url
+    return nil unless has_main_image?
+    Rails.application.routes.url_helpers.rails_blob_path(main_image, only_path: true)
+  end
+  
+  def extract_main_image_from_powerpoint!
+    return false unless has_powerpoints?
+    
+    latest_powerpoint = powerpoints.recent.first
+    return false unless latest_powerpoint&.file&.attached?
+    
+    PowerpointImageExtractorService.new(self, latest_powerpoint).extract_main_image
+  end
+
   # その他の公開メソッド
   def likes_count
     0  # 固定値を返す
@@ -133,6 +155,9 @@ class Portfolio < ApplicationRecord
       end
     end
     
+    # PowerPointファイル処理後にメイン画像を抽出
+    extract_main_image_from_powerpoint!
+
     puts "Finished processing PowerPoint files. Total saved: #{powerpoints.count}"
   end
 end

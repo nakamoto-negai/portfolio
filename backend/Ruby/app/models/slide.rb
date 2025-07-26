@@ -31,6 +31,15 @@ class Slide < ApplicationRecord
     page_number == portfolio.slides.maximum(:page_number)
   end
   
+   # スライドショー関連のヘルパーメソッド
+  def slideshow_url
+    Rails.application.routes.url_helpers.portfolio_slideshow_path(portfolio)
+  end
+
+  def portfolio_url
+    Rails.application.routes.url_helpers.portfolio_path(portfolio)
+  end
+
   private
   
   def set_page_number
