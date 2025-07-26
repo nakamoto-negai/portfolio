@@ -16,12 +16,39 @@ export default function ProfileSidebar({ isOpen, onClose, userId, currentUser })
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   useEffect(() => {
     if (isOpen && userId) {
       fetchUser();
+    } else if (!isOpen) {
+      // サイドバーが閉じられた時に編集状態をリセット
+      setIsEditing(false);
+      setError('');
+      // 編集中のデータも元に戻す（未保存の変更を破棄）
+      if (user) {
+        setProfileData(user);
+      }
     }
   }, [isOpen, userId]);
+
+  // データが変更されているかどうかを検知する関数
+  const hasUnsavedChanges = () => {
+    if (!user || !isEditing) return false;
+    
+    // 値の正規化関数（null/undefinedを空文字列に変換）
+    const normalize = (value) => value || '';
+    
+    return (
+      normalize(profileData.name) !== normalize(user.name) ||
+      normalize(profileData.email) !== normalize(user.email) ||
+      normalize(profileData.profile) !== normalize(user.profile) ||
+      normalize(profileData.skill) !== normalize(user.skill) ||
+      normalize(profileData.experience) !== normalize(user.experience) ||
+      normalize(profileData.github_url) !== normalize(user.github_url) ||
+      normalize(profileData.twitter_url) !== normalize(user.twitter_url)
+    );
+  };
 
   const fetchUser = async () => {
     setLoading(true);
@@ -29,8 +56,19 @@ export default function ProfileSidebar({ isOpen, onClose, userId, currentUser })
       // userIdを数値に変換してからAPIを呼び出す
       const numericUserId = parseInt(userId, 10);
       const res = await getUser(numericUserId);
-      setUser(res.data);
-      setProfileData(res.data);
+      
+      // データを正規化して設定（null/undefinedを空文字列に変換）
+      const normalizedData = {
+        ...res.data,
+        profile: res.data.profile || '',
+        skill: res.data.skill || '',
+        experience: res.data.experience || '',
+        github_url: res.data.github_url || '',
+        twitter_url: res.data.twitter_url || ''
+      };
+      
+      setUser(normalizedData);
+      setProfileData(normalizedData);
       setError('');
     } catch (err) {
       setError('ユーザー情報の取得に失敗しました。');
@@ -84,20 +122,58 @@ export default function ProfileSidebar({ isOpen, onClose, userId, currentUser })
   };
 
   const handleCancel = () => {
-    setProfileData(user);
+    if (hasUnsavedChanges()) {
+      setShowConfirmDialog(true);
+    } else {
+      cancelEdit();
+    }
+  };
+
+  const cancelEdit = () => {
+    if (user) {
+      setProfileData(user);
+    }
     setIsEditing(false);
     setError('');
+    setShowConfirmDialog(false);
+  };
+
+  // 確認ダイアログでの選択処理
+  const handleConfirmSave = async () => {
+    setShowConfirmDialog(false);
+    await handleSave();
+    // 保存成功後にサイドバーを閉じる
+    onClose();
+  };
+
+  const handleConfirmDiscard = () => {
+    setShowConfirmDialog(false);
+    cancelEdit();
+    onClose();
+  };
+
+  const handleConfirmCancel = () => {
+    setShowConfirmDialog(false);
+  };
+
+  // 閉じるボタンの処理
+  const handleClose = () => {
+    if (hasUnsavedChanges()) {
+      setShowConfirmDialog(true);
+    } else {
+      onClose();
+    }
   };
 
   if (!isOpen) return null;
 
   return (
     <>
-      <div className="profile-sidebar-overlay" onClick={onClose} />
+      <div className="profile-sidebar-overlay" onClick={handleClose} />
       <div className={`profile-sidebar ${isOpen ? 'open' : ''}`}>
         <div className="profile-sidebar-header">
           <h2>プロフィール</h2>
-          <button className="close-button" onClick={onClose}>
+          <button className="close-button" onClick={handleClose}>
             ×
           </button>
         </div>
@@ -249,6 +325,27 @@ export default function ProfileSidebar({ isOpen, onClose, userId, currentUser })
           )}
         </div>
       </div>
+      
+      {/* 確認ダイアログ */}
+      {showConfirmDialog && (
+        <div className="confirm-dialog-overlay">
+          <div className="confirm-dialog">
+            <h3>未保存の変更があります</h3>
+            <p>変更内容を保存しますか？</p>
+            <div className="confirm-dialog-buttons">
+              <button className="confirm-save-button" onClick={handleConfirmSave} disabled={loading}>
+                {loading ? '保存中...' : 'はい（保存）'}
+              </button>
+              <button className="confirm-discard-button" onClick={handleConfirmDiscard}>
+                いいえ（破棄）
+              </button>
+              <button className="confirm-cancel-button" onClick={handleConfirmCancel}>
+                キャンセル
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
