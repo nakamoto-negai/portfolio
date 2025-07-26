@@ -4,7 +4,11 @@ module Api
     before_action :set_user, only: [:show, :update]
 
     def index
-      users = User.where.not(id: current_user.id)
+      if current_user
+        users = User.where.not(id: current_user.id)
+      else
+        users = User.all
+      end
       render json: users.select(:id, :name)
     end
 
