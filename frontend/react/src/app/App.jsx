@@ -5,6 +5,8 @@ import Lpsite from '../components/lp/lp.jsx';
 import Login from '../components/Authentification/login.jsx';
 import Register from '../components/Authentification/register.jsx';
 import SlideEditor from '../components/SlideEditor/SlideEditor.jsx'; // SlideEditorをインポート
+import ProfilePage from '../components/Profile/ProfilePage.jsx';
+import ProfileEdit from '../components/Profile/ProfileEdit.jsx';
 import { checkLoginStatus } from '../api/auth.js';
 
 function App() {
@@ -36,6 +38,8 @@ function App() {
           <Route path="/register" element={
             <Register onRegister={(user) => setCurrentUser(user)} />
           } />
+          <Route path="/users/:userId" element={<ProfilePage />} />
+          <Route path="/users/:userId/edit" element={<ProfileEdit user={currentUser} />} />
         </Routes>
       </BrowserRouter>
     </div>

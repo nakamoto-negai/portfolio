@@ -68,6 +68,37 @@
     position: relative;
     z-index: 10;
   }
+
+  /* 三点リーダーメニューボタンのスタイル */
+  .menu-button {
+    position: absolute;
+    top: 2rem;
+    right: 3rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    color: #cccccc;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 20;
+  }
+
+  .menu-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    transform: scale(1.05);
+  }
+
+  .menu-button:active {
+    transform: scale(0.95);
+  }
   
   .title {
     font-size: 1.5rem;
@@ -82,6 +113,8 @@
     color: #999999;
     font-weight: 300;
     letter-spacing: 0.05em;
+    /* 三点リーダーボタンと重ならないよう調整 */
+    margin-right: 60px;
   }
   
   .main-content {
@@ -169,6 +202,18 @@
   
   /* レスポンシブデザイン */
   @media (max-width: 1024px) {
+    .menu-button {
+      top: 1.5rem;
+      right: 2rem;
+      width: 35px;
+      height: 35px;
+      font-size: 1.3rem;
+    }
+    
+    .user-id {
+      margin-right: 50px;
+    }
+
     .main-content {
       flex-direction: column;
       text-align: center;
@@ -198,6 +243,18 @@
   @media (max-width: 768px) {
     .header {
       padding: 1.5rem 2rem;
+    }
+    
+    .menu-button {
+      top: 1.5rem;
+      right: 2rem;
+      width: 30px;
+      height: 30px;
+      font-size: 1.2rem;
+    }
+    
+    .user-id {
+      margin-right: 40px;
     }
     
     .title {
