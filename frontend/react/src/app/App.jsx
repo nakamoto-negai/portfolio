@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Lpsite from '../components/lp/lp.jsx';
 import Login from '../components/Authentification/login.jsx';
 import Register from '../components/Authentification/register.jsx';
+import SlideEditor from '../components/SlideEditor/SlideEditor.jsx'; // SlideEditorをインポート
 import { checkLoginStatus } from '../api/auth.js';
 
 function App() {
@@ -26,9 +27,9 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Lpsite  user={currentUser} />} />
+          <Route path="/" element={<Lpsite user={currentUser} />} />
           <Route path="/gallery" element={<Lpsite user={currentUser}/>} />
-          <Route path="/works" element={<Lpsite user={currentUser}/>} />
+          <Route path="/SlideEditor" element={<SlideEditor user={currentUser}/>} />
           <Route path="/contact" element={<Lpsite user={currentUser}/>} />
           <Route path="/login" element={
             <Login onLogin={(user) => setCurrentUser(user)} />} />

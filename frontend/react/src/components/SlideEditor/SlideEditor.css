@@ -1,0 +1,674 @@
+.slide-editor {
+  display: flex;
+  height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* サイドバー */
+.sidebar {
+  width: 250px;
+  background-color: #f5f5f5;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.slide-count {
+  font-size: 12px;
+  color: #666;
+  background-color: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: normal;
+}
+
+.add-slide-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-slide-btn:hover {
+  background-color: #0056b3;
+}
+
+.slide-thumbnails {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.slide-thumbnails::-webkit-scrollbar {
+  width: 6px;
+}
+
+.slide-thumbnails::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.slide-thumbnails::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.slide-thumbnails::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.slide-thumbnail {
+  position: relative;
+  background-color: white;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  overflow: hidden;
+  width: 100%;
+  max-width: 180px;
+  margin-left: auto;
+  margin-right: auto;
+  user-select: none;
+}
+
+.slide-thumbnail:hover {
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.slide-thumbnail:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(0, 123, 255, 0.3);
+}
+
+.slide-thumbnail.active {
+  border-color: #007bff;
+  background-color: #e3f2fd;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.slide-thumbnail.active:hover {
+  transform: none;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+}
+
+.thumbnail-preview {
+  width: 100%;
+  height: 90px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px 4px 0 0;
+  margin: 0;
+}
+
+.thumbnail-element {
+  pointer-events: none;
+}
+
+.thumbnail-title {
+  padding: 8px 10px;
+  font-size: 12px;
+  color: #666;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-top: 1px solid #eee;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.slide-thumbnail.active .thumbnail-title {
+  color: #007bff;
+  font-weight: 500;
+}
+
+.thumbnail-actions {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.slide-thumbnail:hover .thumbnail-actions {
+  opacity: 1;
+}
+
+.duplicate-slide-btn,
+.delete-slide-btn {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 22px;
+  height: 22px;
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.duplicate-slide-btn:hover {
+  background-color: rgba(0, 123, 255, 0.9);
+  transform: scale(1.1);
+}
+
+.delete-slide-btn:hover {
+  background-color: rgba(220, 53, 69, 0.9);
+  transform: scale(1.1);
+}
+
+/* メインエディタ */
+.main-editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #fafafa;
+}
+
+/* ツールバー */
+.toolbar {
+  background-color: white;
+  border-bottom: 1px solid #ddd;
+  padding: 15px 20px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.toolbar-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.toolbar-separator {
+  width: 1px;
+  height: 24px;
+  background-color: #ddd;
+  margin: 0 5px;
+}
+
+.toolbar button {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.toolbar button:hover:not(:disabled) {
+  background-color: #e9ecef;
+}
+
+.toolbar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.delete-btn {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+
+.delete-btn:hover {
+  background-color: #c82333 !important;
+}
+
+/* スライドナビゲーション */
+.current-slide-info {
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+  background-color: #f8f9fa;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  min-width: 100px;
+  text-align: center;
+}
+
+/* 図形ドロップダウン */
+.shape-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-btn {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 120px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  top: 100%;
+  left: 0;
+}
+
+.shape-dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content button {
+  color: black;
+  padding: 8px 12px;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.dropdown-content button:hover {
+  background-color: #f1f1f1;
+}
+
+/* スライドキャンバス */
+.slide-canvas {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow: auto;
+}
+
+.slide-container {
+  width: 800px;
+  height: 450px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* スライド要素 */
+.slide-element {
+  position: absolute;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+  user-select: none;
+}
+
+.slide-element:hover {
+  border-color: #007bff;
+}
+
+.slide-element.selected {
+  border-color: #007bff;
+  border-style: dashed;
+}
+
+.slide-element.text textarea {
+  font-family: inherit;
+  outline: none;
+}
+
+.slide-element.text textarea:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* リサイズハンドル */
+.resize-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #007bff;
+  border: 1px solid white;
+  border-radius: 2px;
+  z-index: 10;
+}
+
+.resize-handle.nw {
+  top: -4px;
+  left: -4px;
+  cursor: nw-resize;
+}
+
+.resize-handle.ne {
+  top: -4px;
+  right: -4px;
+  cursor: ne-resize;
+}
+
+.resize-handle.sw {
+  bottom: -4px;
+  left: -4px;
+  cursor: sw-resize;
+}
+
+.resize-handle.se {
+  bottom: -4px;
+  right: -4px;
+  cursor: se-resize;
+}
+
+/* プレビューモード */
+.preview-mode {
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-header {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 10;
+}
+
+.preview-header h2 {
+  color: white;
+  margin: 0;
+  font-size: 18px;
+}
+
+.preview-header button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.preview-header button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.preview-header button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
+
+.preview-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.preview-slide {
+  width: 80vw;
+  height: 45vw;
+  max-width: 800px;
+  max-height: 450px;
+  background-color: white;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.preview-element {
+  position: absolute;
+}
+
+/* プロパティパネル */
+.properties-panel {
+  width: 300px;
+  background-color: white;
+  border-left: 1px solid #ddd;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.properties-panel h4 {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.property-group {
+  margin-bottom: 15px;
+}
+
+.property-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #555;
+}
+
+.property-group input,
+.property-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.property-group input:focus,
+.property-group select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.z-index-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.z-index-controls button {
+  flex: 1;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.z-index-controls button:hover {
+  background-color: #e9ecef;
+}
+
+.delete-element-btn {
+  width: 100%;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.delete-element-btn:hover {
+  background-color: #c82333;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1200px) {
+  .properties-panel {
+    width: 250px;
+  }
+}
+
+@media (max-width: 900px) {
+  .slide-editor {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .slide-thumbnails {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .slide-thumbnail {
+    min-width: 120px;
+    margin-bottom: 0;
+  }
+  
+  .properties-panel {
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .preview-slide {
+    width: 95vw;
+    height: 53.4vw;
+  }
+
+  .toolbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .toolbar-group {
+    gap: 6px;
+  }
+
+  .toolbar button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .sidebar {
+    height: 150px;
+  }
+
+  .sidebar-header {
+    padding: 15px;
+  }
+
+  .sidebar-header h3 {
+    font-size: 16px;
+  }
+
+  .slide-thumbnails {
+    padding: 8px;
+  }
+
+  .slide-thumbnail {
+    min-width: 100px;
+  }
+
+  .thumbnail-preview {
+    height: 60px;
+  }
+
+  .thumbnail-title {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .slide-canvas {
+    padding: 10px;
+  }
+
+  .slide-container {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    max-width: 600px;
+    max-height: 337px;
+  }
+
+  .toolbar {
+    padding: 10px 15px;
+    gap: 8px;
+  }
+
+  .toolbar button {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+
+  .current-slide-info {
+    font-size: 12px;
+    padding: 4px 8px;
+    min-width: 80px;
+  }
+
+  .properties-panel {
+    padding: 15px;
+  }
+
+  .properties-panel h4 {
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+
+  .property-group {
+    margin-bottom: 12px;
+  }
+
+  .property-group label {
+    font-size: 13px;
+  }
+
+  .property-group input,
+  .property-group select {
+    padding: 6px;
+    font-size: 13px;
+  }
+}
