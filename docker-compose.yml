@@ -12,6 +12,7 @@ services:
       - "3000:3000"
     volumes:
       - ./backend/Ruby:/var/www/html
+      - /var/www/html/vendor/bundle
     depends_on:
       - db
 
@@ -59,6 +60,13 @@ services:
       - "8888:80"                      # http://localhost:8888
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+
+  # ─────────────── Redis ───────────────
+  redis:
+    image: redis:latest
+    container_name: redis_server
+    ports:
+      - "6379:6379"
 
 volumes:
   dbdata:

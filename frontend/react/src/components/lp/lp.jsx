@@ -1,8 +1,11 @@
 import React from 'react';
 import './lp.css';
 import { logoutUser } from '../../api/auth';
+import { useAuth } from '../../hooks/useAuth'; 
 
-const Lpsite = ({ user }) => {
+const Lpsite = () => {
+  const { user, loading, setUser } = useAuth();
+
   const handleNavigation = (section) => {
     // ここで各セクションに応じた処理を行う
     switch(section) {
@@ -26,10 +29,28 @@ const Lpsite = ({ user }) => {
         // 新規登録ページへ遷移
         window.location.href = '/register';   
         break;
+      case 'messages':
+        // メッセージページへ遷移
+        window.location.href = '/messages';
+        break;
       default:
         break;
     }
   };
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      setUser(null); // ログアウト後にユーザー情報をクリア
+      window.location.href = '/'; // ホームへリダイレクト
+    } catch (err) {
+      console.error('ログアウト失敗:', err.response?.data || err.message);
+    }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>; // ローディング中の表示
+  }
 
   return (
     <div className="portfolio-container">
@@ -39,21 +60,18 @@ const Lpsite = ({ user }) => {
           {user ? (
             <div>
               <span className="nav-link"
-                    onClick={() => window.location.href = '/'}
+                    onClick={() => handleNavigation('messages')}
               >
                 {user.name}
               </span>
               <span className="separator">|</span>
-              <span className="nav-link"
-                    onClick={async () => {
-                      try {
-                        await logoutUser();
-                        window.location.href = '/';
-                      } catch (err) {
-                        console.error('ログアウト失敗:', err.response?.data || err.message);
-                      }
-                    }}
+              <span className="nav-link" 
+                    onClick={() => handleNavigation('messages')}
               >
+                messages
+              </span>      
+              <span className="separator">|</span>
+              <span className="nav-link" onClick={handleLogout}>
                 logout
               </span>
             </div>
