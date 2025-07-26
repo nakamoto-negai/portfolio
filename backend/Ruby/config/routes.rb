@@ -11,7 +11,6 @@ Rails.application.routes.draw do
       resources :messages, only: %i[index create]
     end
 
-<<<<<<< HEAD
   # Portfolio routes with nested slides
   resources :portfolios do
     resources :slides
@@ -44,7 +43,6 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "portfolios#index"
-=======
     # ユーザー一覧
     resources :users, only: [:index]
     resources :users, only: [:show]
@@ -74,5 +72,4 @@ Rails.application.routes.draw do
     end
   end
   mount ActionCable.server => '/cable'
->>>>>>> faad271db9624b8bf3d10a95b06da7258e1f0607
 end
