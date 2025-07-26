@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  # セキュアなパスワード管理
   has_secure_password
   
   # アソシエーション
@@ -12,8 +13,9 @@ class User < ApplicationRecord
   
   # バリデーション
   validates :name, presence: true, length: { maximum: 50 }
-  validates :email, presence: true, uniqueness: { case_sensitive: false }, 
-            format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :email, presence: true,
+                    uniqueness: { case_sensitive: false }, 
+                    format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :password, length: { minimum: 6 }, allow_nil: true
   validates :profile, length: { maximum: 500 }
   

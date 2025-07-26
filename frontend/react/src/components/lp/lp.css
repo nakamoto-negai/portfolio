@@ -1,0 +1,317 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  @import url('https://fonts.googleapis.com/css2?family=Hannari&display=swap');
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    background-color: #2a2a2a;
+    color: #ffffff;
+    overflow: hidden;
+  }
+  
+  .portfolio-container {
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+    position: relative;
+  }
+  
+  /* 白い靄の効果を追加 */
+  .portfolio-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.06) 0%, transparent 40%),
+      radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.04) 0%, transparent 60%),
+      radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 45%),
+      radial-gradient(circle at 15% 85%, rgba(255, 255, 255, 0.03) 0%, transparent 35%),
+      linear-gradient(45deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.02) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  .portfolio-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(ellipse at center, rgba(255, 255, 255, 0.03) 0%, transparent 70%),
+      conic-gradient(from 0deg at 50% 50%, 
+        rgba(255, 255, 255, 0.02) 0deg,
+        rgba(255, 255, 255, 0.06) 90deg,
+        rgba(255, 255, 255, 0.02) 180deg,
+        rgba(255, 255, 255, 0.04) 270deg,
+        rgba(255, 255, 255, 0.02) 360deg
+      );
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 3rem;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* 三点リーダーメニューボタンのスタイル */
+  .menu-button {
+    position: absolute;
+    top: 2rem;
+    right: 3rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    color: #cccccc;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 20;
+  }
+
+  .menu-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    transform: scale(1.05);
+  }
+
+  .menu-button:active {
+    transform: scale(0.95);
+  }
+  
+  .title {
+    font-size: 1.5rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: #cccccc;
+    text-transform: uppercase;
+  }
+  
+  .user-id {
+    font-size: 1rem;
+    color: #999999;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    /* 三点リーダーボタンと重ならないよう調整 */
+    margin-right: 60px;
+  }
+  
+  .main-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8rem;
+    height: calc(100vh - 120px);
+    position: relative;
+    z-index: 2;
+  }
+  
+  .image-container {
+    flex: 1;
+    max-width: 60%;
+    position: relative;
+  }
+  
+  .workspace-image {
+    width: 90%;
+    height: auto;
+    object-fit: cover;
+  }
+  
+  .content-section {
+    flex: 1;
+    max-width: 40%;
+    padding-left: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .portfolio-heading {
+    font-size: 4rem;
+    font-weight: 100;
+    color: #B5AC98;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+    text-transform: lowercase;
+    font-family: 'Hannari', serif;
+  }
+  
+  /* ナビゲーションテキストのスタイル */
+  .navigation-text {
+    font-size: 1.5rem;
+    color: #cccccc;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    line-height: 1.6;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Hannari', serif;
+  }
+  
+  .nav-link {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+  }
+  
+  /* .nav-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
+  }
+   */
+  .nav-link:active {
+    transform: translateY(0);
+  }
+  
+  .separator {
+    color: #666666;
+    font-size: 1.2rem;
+    margin: 0 0.2rem;
+  }
+  
+  /* レスポンシブデザイン */
+  @media (max-width: 1024px) {
+    .menu-button {
+      top: 1.5rem;
+      right: 2rem;
+      width: 35px;
+      height: 35px;
+      font-size: 1.3rem;
+    }
+    
+    .user-id {
+      margin-right: 50px;
+    }
+
+    .main-content {
+      flex-direction: column;
+      text-align: center;
+      padding: 2rem;
+    }
+    
+    .image-container {
+      max-width: 80%;
+      margin-bottom: 3rem;
+    }
+    
+    .content-section {
+      max-width: 100%;
+      padding-left: 0;
+      align-items: center;
+    }
+    
+    .portfolio-heading {
+      font-size: 3rem;
+    }
+    
+    .navigation-text {
+      font-size: 1.2rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .header {
+      padding: 1.5rem 2rem;
+    }
+    
+    .menu-button {
+      top: 1.5rem;
+      right: 2rem;
+      width: 30px;
+      height: 30px;
+      font-size: 1.2rem;
+    }
+    
+    .user-id {
+      margin-right: 40px;
+    }
+    
+    .title {
+      font-size: 1.2rem;
+    }
+    
+    .user-id {
+      font-size: 0.9rem;
+    }
+    
+    .main-content {
+      padding: 1rem;
+    }
+    
+    .image-container {
+      max-width: 90%;
+    }
+    
+    .portfolio-heading {
+      font-size: 2.5rem;
+    }
+    
+    .navigation-text {
+      font-size: 1rem;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .separator {
+      display: none;
+    }
+    
+    .nav-link::after {
+      bottom: -2rem;
+    }
+  }
+  
+  /* アニメーション効果 */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .portfolio-heading {
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+  }
+  
+  .navigation-text {
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+  }
+  
+  .workspace-image {
+    animation: fadeInUp 0.8s ease-out 0.1s both;
+  }

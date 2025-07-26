@@ -83,7 +83,7 @@ class Portfolio < ApplicationRecord
   end
 
   def thumbnail_slide
-    slides.order(:page_number).first
+    slides.where.not(page_number: nil).order(:page_number).first
   end
 
   # メイン画像関連のメソッド

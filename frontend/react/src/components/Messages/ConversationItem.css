@@ -1,0 +1,10 @@
+.conversation-item {
+  cursor: pointer;
+  padding: 0.5rem 0 0.5rem 1rem; /* py-2 pl-4 */
+  transition: background-color 0.2s ease;
+}
+
+.conversation-item:hover,
+.conversation-item--active {
+  background-color: #2b2d33;
+}
