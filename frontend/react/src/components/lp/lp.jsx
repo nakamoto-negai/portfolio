@@ -70,6 +70,8 @@ const Lpsite = () => {
       case 'home':
         // ホームページへ遷移
         navigate('/')
+      case 'profile':
+        navigate(`/users/${user.id}`)
         break;
       default:
         break;
@@ -102,7 +104,7 @@ const Lpsite = () => {
           {user ? (
             <div>
               <span className="nav-link"
-                onClick={() => handleNavigation(`/users/${user.id}`)}
+                onClick={() => handleNavigation('profile')}
               >
                 {user.name}
               </span>
