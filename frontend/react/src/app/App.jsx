@@ -9,7 +9,6 @@ import ProfilePage from '../components/Profile/ProfilePage.jsx';
 import ProfileEdit from '../components/Profile/ProfileEdit.jsx';
 
 const AppRoutes = () => {
-  const { currentUser } = useAuth();
   return (
     <div className="App">
       <Routes>
@@ -23,7 +22,7 @@ const AppRoutes = () => {
           <Register />
         } />
         <Route path="/users/:userId" element={<ProfilePage />} />
-        <Route path="/users/:userId/edit" element={<ProfileEdit user={currentUser} />} />
+        <Route path="/users/:userId/edit" element={<ProfileEdit />} />
         <Route path="/messages" element={<MessagesPage />} />
       </Routes>
     </div>

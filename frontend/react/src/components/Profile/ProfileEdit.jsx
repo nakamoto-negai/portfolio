@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getUser, updateUser } from '../../api/users';
 import './ProfileEdit.css';
+import { useAuth } from '../../hooks/useAuth';
 
-export default function ProfileEdit({ user: currentUser }) {
+export default function ProfileEdit({}) {
   const [profileData, setProfileData] = useState({
     name: '',
     email: '',
@@ -16,10 +17,12 @@ export default function ProfileEdit({ user: currentUser }) {
   const [error, setError] = useState('');
   const { userId } = useParams();
   const navigate = useNavigate();
+  const { user, loading, setUser } = useAuth();
 
   useEffect(() => {
+    if (loading) return;
     // ログインユーザー本人でなければ編集させない
-    if (!currentUser || currentUser.id.toString() !== userId) {
+    if (!user || user.id.toString() !== userId) {
       setError('このページを編集する権限がありません。');
       return;
     }
@@ -33,7 +36,7 @@ export default function ProfileEdit({ user: currentUser }) {
       }
     };
     fetchUser();
-  }, [userId, currentUser]);
+  }, [userId, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
