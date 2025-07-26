@@ -154,6 +154,7 @@ GEM
       net-smtp
     marcel (1.0.4)
     matrix (0.4.3)
+    mini_magick (4.13.2)
     mini_mime (1.1.5)
     minitest (5.25.5)
     msgpack (1.8.0)
@@ -306,6 +307,7 @@ DEPENDENCIES
   faker
   importmap-rails
   jbuilder
+  mini_magick (~> 4.11)
   pg (~> 1.1)
   puma (>= 5.0)
   rack-cors

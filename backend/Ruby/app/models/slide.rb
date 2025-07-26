@@ -2,9 +2,11 @@ class Slide < ApplicationRecord
   # アソシエーション
   belongs_to :portfolio
   
+  # ActiveStorage
+  has_one_attached :image
+
   # バリデーション
   validates :portfolio_id, presence: true
-  validates :image_url, presence: true, format: { with: URI::DEFAULT_PARSER.make_regexp(%w[http https]) }
   validates :page_number, presence: true, uniqueness: { scope: :portfolio_id }
   validates :page_number, numericality: { greater_than: 0 }
   
@@ -31,6 +33,15 @@ class Slide < ApplicationRecord
     page_number == portfolio.slides.maximum(:page_number)
   end
   
+   # スライドショー関連のヘルパーメソッド
+  def slideshow_url
+    Rails.application.routes.url_helpers.portfolio_slideshow_path(portfolio)
+  end
+
+  def portfolio_url
+    Rails.application.routes.url_helpers.portfolio_path(portfolio)
+  end
+
   private
   
   def set_page_number

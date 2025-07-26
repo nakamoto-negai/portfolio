@@ -91,7 +91,7 @@ const Lpsite = () => {
   return (
     <div className="portfolio-container">
       <header className="header">
-        <h1 className="title">PORTFOLIO.TSX</h1>
+        <h1 className="title">POTORINK</h1>
         {/* 三点リーダーメニューボタン（ログイン時のみ表示） */}
         {user && (
           <button className="menu-button" onClick={handleProfileMenuClick}>

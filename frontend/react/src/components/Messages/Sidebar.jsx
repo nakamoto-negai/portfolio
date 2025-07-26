@@ -13,7 +13,7 @@ const Sidebar = ({ activeId, onSelect }) => {
 
   return (
     <aside className="sidebar">
-      <h1 className="sidebar-title">portfolio</h1>
+      <h1 className="sidebar-title">POTORINK</h1>
       <h2 className="sidebar-subtitle">requests</h2>
       <ul className="conversation-list">
         {(users || []).map((u) => (
