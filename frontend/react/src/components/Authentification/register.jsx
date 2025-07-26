@@ -8,27 +8,33 @@ export default function Register({ onRegister }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [errors, setErrors] = useState([]); // エラー管理用
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setErrors([]); // 前回のエラーをクリア
+
     if (password !== passwordConfirm) {
-      alert('パスワードが一致しません');
+      setErrors(['パスワードが一致しません']);
       return;
     }
 
     try {
-      // ユーザー登録APIを呼び出す
       const res = await registerUser({ name, email, password });
       const user = res.data.user;
-
-      // 親にユーザー情報を渡す
       onRegister(user);
-      // ホーム画面へ遷移
       navigate('/');
     } catch (err) {
+      const responseErrors = err.response?.data?.errors;
+      if (Array.isArray(responseErrors)) {
+        setErrors(responseErrors);
+      } else if (typeof responseErrors === 'string') {
+        setErrors([responseErrors]);
+      } else {
+        setErrors(['登録に失敗しました。もう一度お試しください。']);
+      }
       console.error('登録失敗:', err.response?.data || err.message);
-      alert('登録に失敗しました。もう一度お試しください。');
     }
   };
 
@@ -37,6 +43,13 @@ export default function Register({ onRegister }) {
       <div className="register-card">
         <h1 className="register-title">新規登録</h1>
         <form onSubmit={handleSubmit} className="register-form">
+          {errors.length > 0 && (
+            <ul className="error-messages">
+              {errors.map((error, index) => (
+                <li key={index} className="error-text">{error}</li>
+              ))}
+            </ul>
+          )}
           <label>
             名前
             <input
