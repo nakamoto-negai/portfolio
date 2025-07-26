@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  # API routes
   namespace :api, defaults: { format: :json } do
     # 認証系
     post '/register', to: 'auth#register'
@@ -11,7 +12,43 @@ Rails.application.routes.draw do
       resources :messages, only: %i[index create]
     end
 
-  # Portfolio routes with nested slides
+    # ユーザー一覧・詳細
+    resources :users, only: [:index, :show, :update]
+
+    # Portfolio API routes with enhanced features
+    resources :portfolios, only: [:index, :show, :create, :update, :destroy] do
+      collection do
+        # GET /api/portfolios/published
+        # 公開設定のポートフォリオの一覧を取得
+        get :published
+        # GET /api/portfolios/my
+        # 自分のポートフォリオ一覧を取得
+        get :my
+      end
+      resources :slides, only: [:index, :create, :update, :destroy] do
+        collection do
+          # GET /api/portfolios/:portfolio_id/slides/thumbnail
+          # サムネイル用の最初のスライドを取得
+          get :thumbnail
+          # POST /api/portfolios/:portfolio_id/slides/bulk_create
+          # スライド一括作成
+          post :bulk_create
+          # PUT /api/portfolios/:portfolio_id/slides/reorder
+          # スライド順序変更
+          put :reorder
+        end
+      end
+    end
+
+    # API v1 namespace for legacy support
+    namespace :v1 do
+      resources :portfolios do
+        resources :slides
+      end
+    end
+  end
+
+  # Web interface routes (Non-API)
   resources :portfolios do
     resources :slides
     resources :powerpoints do
@@ -27,49 +64,12 @@ Rails.application.routes.draw do
     end
   end
 
-
   # Individual slide routes for edit/update/destroy
   resources :slides, only: [:edit, :update, :destroy]
-  
-  # API routes
-  namespace :api do
-    namespace :v1 do
-      resources :portfolios do
-        resources :slides
-      end
-    end
-  end
 
-
-  # Defines the root path route ("/")
-  root "portfolios#index"
-    # ユーザー一覧
-    resources :users, only: [:index]
-    resources :users, only: [:show]
-
-    resources :portfolios, only: [:index, :show, :create, :update, :destroy] do
-      collection do
-        # GET /api/v1/portfolios/published
-        # 公開設定のポートフォリオの一覧を取得
-        get :published
-        # GET /api/v1/portfolios/my
-        # 自分のポートフォリオ一覧を取得
-        get :my
-      end
-      resources :slides, only: [:index, :create, :update, :destroy] do
-        collection do
-          # GET /api/v1/portfolios/:portfolio_id/slides/thumbnail
-          # サムネイル用の最初のスライドを取得
-          get :thumbnail
-          # POST /api/v1/portfolios/:portfolio_id/slides/bulk_create
-          # スライド一括作成
-          post :bulk_create
-          # PUT /api/v1/portfolios/:portfolio_id/slides/reorder
-          # スライド順序変更
-          put :reorder
-        end
-      end
-    end
-  end
+  # WebSocket
   mount ActionCable.server => '/cable'
+
+  # Root path
+  root "portfolios#index"
 end
