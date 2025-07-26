@@ -75,8 +75,7 @@ class PowerpointImageExtractorService
         images.each_with_index do |image_path, idx|
           Rails.logger.info "Extracted slide image: #{image_path}"
           File.open(image_path, 'rb') do |img|
-            slide = @portfolio.slides.build(page_number: idx + 1)
-            slide.image_url = nil # image_urlカラムがある場合はnil
+            slide = @portfolio.slides.create!(page_number: idx + 1)
             slide.image.attach(
               io: img,
               filename: File.basename(image_path),

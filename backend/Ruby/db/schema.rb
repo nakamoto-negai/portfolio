@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_26_080000) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_26_014547) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -70,11 +70,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_26_080000) do
 
   create_table "slides", force: :cascade do |t|
     t.bigint "portfolio_id", null: false
-    t.string "image_url", null: false
     t.integer "page_number", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "content"
     t.index ["page_number"], name: "index_slides_on_page_number"
     t.index ["portfolio_id", "page_number"], name: "index_slides_on_portfolio_id_and_page_number", unique: true
     t.index ["portfolio_id"], name: "index_slides_on_portfolio_id"

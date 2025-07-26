@@ -125,8 +125,6 @@
               <div class="card slide-card h-100">
                 <% if slide.image.attached? %>
                   <%= image_tag slide.image, class: "card-img-top slide-thumbnail", alt: "スライド #{slide.page_number}" %>
-                <% elsif slide.image_url.present? %>
-                  <%= image_tag slide.image_url, class: "card-img-top slide-thumbnail", alt: "スライド #{slide.page_number}" %>
                 <% else %>
                   <div class="card-img-top slide-thumbnail bg-light d-flex align-items-center justify-content-center">
                     <i class="fas fa-image fa-2x text-muted"></i>
@@ -135,12 +133,6 @@
                 
                 <div class="card-body d-flex flex-column">
                   <h6 class="card-title">スライド <%= slide.page_number %></h6>
-                  <% if slide.content %>
-                    <p class="card-text small text-muted flex-grow-1">
-                      <%= truncate(slide.content, length: 80) %>
-                    </p>
-                  <% end %>
-                  
                   <div class="btn-group btn-group-sm mt-auto" role="group">
                     <%= link_to "表示", portfolio_slide_path(@portfolio, slide), 
                                 class: "btn btn-outline-primary" %>

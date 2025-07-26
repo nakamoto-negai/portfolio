@@ -67,6 +67,6 @@ class SlidesController < ApplicationController
   end
   
   def slide_params
-    params.require(:slide).permit(:image_url, :page_number)
+    params.require(:slide).permit(:image, :page_number)
   end
 end
