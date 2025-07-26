@@ -9,7 +9,7 @@ import ProfilePage from '../components/Profile/ProfilePage.jsx';
 import ProfileEdit from '../components/Profile/ProfileEdit.jsx';
 
 const AppRoutes = () => {
-  const { currentUser, setCurrentUser } = useAuth();
+  const { currentUser } = useAuth();
   return (
     <div className="App">
       <Routes>
@@ -18,9 +18,9 @@ const AppRoutes = () => {
         <Route path="/SlideEditor" element={<SlideEditor />} />
         <Route path="/contact" element={<Lpsite />} />
         <Route path="/login" element={
-          <Login onLogin={(user) => setCurrentUser(user)} />} />
+          <Login />} />
         <Route path="/register" element={
-          <Register onRegister={(user) => setCurrentUser(user)} />
+          <Register />
         } />
         <Route path="/users/:userId" element={<ProfilePage />} />
         <Route path="/users/:userId/edit" element={<ProfileEdit user={currentUser} />} />

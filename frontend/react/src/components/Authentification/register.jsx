@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './register.css';
 import { registerUser } from '../../api/auth';
+import { useAuth } from '../../hooks/useAuth';
 
-export default function Register({ onRegister }) {
+export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [errors, setErrors] = useState([]); // エラー管理用
   const navigate = useNavigate();
+  const { setUser} = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -22,6 +24,7 @@ export default function Register({ onRegister }) {
 
     try {
       const res = await registerUser({ name, email, password });
+      setUser(res.data.user)
       navigate('/');
     } catch (err) {
       const responseErrors = err.response?.data?.errors;

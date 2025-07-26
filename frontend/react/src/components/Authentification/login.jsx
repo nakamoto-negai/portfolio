@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
 import { loginUser } from '../../api/auth';
+import { useAuth } from '../../hooks/useAuth';
 
-export default function Login({ onLogin }) {
+export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // 🔸エラーメッセージ用
+  const [errorMessage, setErrorMessage] = useState('');
+  const { setUser } = useAuth();
   const navigate = useNavigate();
-
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -16,7 +17,8 @@ export default function Login({ onLogin }) {
 
     try {
       const res = await loginUser({ email, password });
-
+      //ログイン後にsetUser()を使うことで再フェッチなくcheckLoginStatus()が呼ばれ、ログイン反映できる
+      setUser(res.data.user);
       navigate('/');
     } catch (err) {
       console.error('ログイン失敗:', err.response?.data || err.message);
