@@ -50,7 +50,7 @@ const Lpsite = () => {
         break;
       case 'messages':
         // メッセージページへ遷移
-        navigate('/message')
+        navigate('/messages')
         break;
       case 'home':
         // ホームページへ遷移
@@ -72,7 +72,7 @@ const Lpsite = () => {
   };
 
 
-  if (loading) return <div>Loading...</div>; // ローディング中の表示
+  
   
   return (
     <div className="portfolio-container">

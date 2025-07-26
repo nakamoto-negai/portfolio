@@ -1,5 +1,5 @@
 module Api
-  class Api::V1::PortfoliosController < ApplicationController
+  class Api::PortfoliosController < ApplicationController
   skip_before_action :verify_authenticity_token 
     before_action :set_portfolio, only: [:show, :update, :destroy]
 

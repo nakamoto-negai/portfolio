@@ -1,5 +1,5 @@
 module Api
-  class Api::V1::SlidesController < ApplicationController
+  class Api::SlidesController < ApplicationController
     before_action :set_portfolio
     before_action :set_slide, only: [:update, :destroy]
     skip_before_action :verify_authenticity_token

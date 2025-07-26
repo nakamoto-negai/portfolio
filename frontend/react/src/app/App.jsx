@@ -9,7 +9,7 @@ import ProfilePage from '../components/Profile/ProfilePage.jsx';
 import ProfileEdit from '../components/Profile/ProfileEdit.jsx';
 
 const AppRoutes = () => {
-  const [currentUser, setCurrentUser] = useAuth();
+  const { currentUser, setCurrentUser } = useAuth();
   return (
     <div className="App">
       <Routes>

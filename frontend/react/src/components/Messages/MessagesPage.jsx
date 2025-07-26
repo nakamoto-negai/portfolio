@@ -20,8 +20,7 @@ const MessagesPage = () => {
         .catch(() => setPartner(null));
     }
   }, [partnerId]);
-
-  if (loading) return <p>Loading...</p>;
+  
   if (!user) return <p className="login-warning">ログインしてください</p>;
 
   return (

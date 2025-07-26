@@ -22,8 +22,6 @@ export default function Register({ onRegister }) {
 
     try {
       const res = await registerUser({ name, email, password });
-      const user = res.data.user;
-      onRegister(user);
       navigate('/');
     } catch (err) {
       const responseErrors = err.response?.data?.errors;

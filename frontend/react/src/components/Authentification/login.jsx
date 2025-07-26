@@ -15,9 +15,6 @@ export default function Login({ onLogin }) {
 
     try {
       const res = await loginUser({ email, password });
-      const user = res.data.user;
-
-      onLogin(user);
       navigate('/');
     } catch (err) {
       console.error('ログイン失敗:', err.response?.data || err.message);
