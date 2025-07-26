@@ -41,6 +41,6 @@ class Portfolio < ApplicationRecord
   
   # 最初のスライドを取得（サムネイル用）
   def thumbnail_slide
-    slides.order(:page_number).first
+    slides.where.not(page_number: nil).order(:page_number).first
   end
 end
