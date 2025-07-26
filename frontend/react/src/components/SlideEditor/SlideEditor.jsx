@@ -27,9 +27,13 @@ const SlideEditor = () => {
     }
   ]);
 
-  // サムネイル生成用のcanvasサイズ
-  const THUMBNAIL_WIDTH = 176;
-  const THUMBNAIL_HEIGHT = 90;
+  // サムネイル生成用のスケール計算
+  const SIDEBAR_WIDTH = 280;
+  const THUMBNAIL_PADDING = 24; // 左右のパディング合計
+  const THUMBNAIL_BORDER = 4; // ボーダー幅合計
+  const AVAILABLE_WIDTH = SIDEBAR_WIDTH - THUMBNAIL_PADDING - THUMBNAIL_BORDER;
+  const THUMBNAIL_WIDTH = AVAILABLE_WIDTH;
+  const THUMBNAIL_HEIGHT = AVAILABLE_WIDTH * (9/16); // 16:9の比率
   const SCALE_FACTOR = THUMBNAIL_WIDTH / 800;
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -56,8 +60,412 @@ const SlideEditor = () => {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [isExporting, setIsExporting] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
 
   const fileInputRef = useRef(null);
+
+  // テンプレート定義
+  const templates = [
+    {
+      id: 'blank',
+      name: '空白',
+      description: '何もない空白のスライドから始める',
+      preview: '#ffffff',
+      slides: [
+        {
+          id: 1,
+          title: 'スライド 1',
+          background: '#ffffff',
+          elements: []
+        }
+      ]
+    },
+    {
+      id: 'title-slide',
+      name: 'タイトルスライド',
+      description: 'プレゼンテーション用のタイトルページ',
+      preview: '#f8f9fa',
+      slides: [
+        {
+          id: 1,
+          title: 'タイトルスライド',
+          background: '#f8f9fa',
+          elements: [
+            {
+              id: 'title-1',
+              type: 'text',
+              content: 'プレゼンテーションタイトル',
+              x: 50,
+              y: 150,
+              width: 700,
+              height: 80,
+              fontSize: 48,
+              fontWeight: 'bold',
+              color: '#2c3e50',
+              textAlign: 'center',
+              zIndex: 1
+            },
+            {
+              id: 'subtitle-1',
+              type: 'text',
+              content: 'サブタイトル・説明文',
+              x: 50,
+              y: 250,
+              width: 700,
+              height: 40,
+              fontSize: 24,
+              fontWeight: 'normal',
+              color: '#7f8c8d',
+              textAlign: 'center',
+              zIndex: 2
+            },
+            {
+              id: 'author-1',
+              type: 'text',
+              content: '発表者名\n2025年7月26日',
+              x: 500,
+              y: 350,
+              width: 250,
+              height: 60,
+              fontSize: 16,
+              fontWeight: 'normal',
+              color: '#34495e',
+              textAlign: 'right',
+              zIndex: 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'business-report',
+      name: 'ビジネスレポート',
+      description: '企業向けレポート用テンプレート',
+      preview: '#ffffff',
+      slides: [
+        {
+          id: 1,
+          title: 'エグゼクティブサマリー',
+          background: '#ffffff',
+          elements: [
+            {
+              id: 'header-1',
+              type: 'shape',
+              shapeType: 'rectangle',
+              x: 0,
+              y: 0,
+              width: 800,
+              height: 60,
+              fillColor: '#3498db',
+              borderColor: '#2980b9',
+              borderWidth: 0,
+              zIndex: 1
+            },
+            {
+              id: 'title-1',
+              type: 'text',
+              content: 'エグゼクティブサマリー',
+              x: 30,
+              y: 10,
+              width: 740,
+              height: 40,
+              fontSize: 28,
+              fontWeight: 'bold',
+              color: '#ffffff',
+              textAlign: 'left',
+              zIndex: 2
+            },
+            {
+              id: 'content-1',
+              type: 'text',
+              content: '• 主要な成果と結果\n• 重要なポイント\n• 今後のアクション',
+              x: 50,
+              y: 100,
+              width: 350,
+              height: 200,
+              fontSize: 18,
+              fontWeight: 'normal',
+              color: '#2c3e50',
+              textAlign: 'left',
+              zIndex: 3
+            },
+            {
+              id: 'chart-placeholder',
+              type: 'shape',
+              shapeType: 'rectangle',
+              x: 450,
+              y: 100,
+              width: 300,
+              height: 200,
+              fillColor: '#ecf0f1',
+              borderColor: '#bdc3c7',
+              borderWidth: 2,
+              zIndex: 4
+            },
+            {
+              id: 'chart-label',
+              type: 'text',
+              content: 'グラフ・図表エリア',
+              x: 450,
+              y: 190,
+              width: 300,
+              height: 30,
+              fontSize: 16,
+              fontWeight: 'normal',
+              color: '#7f8c8d',
+              textAlign: 'center',
+              zIndex: 5
+            }
+          ]
+        },
+        {
+          id: 2,
+          title: '詳細分析',
+          background: '#ffffff',
+          elements: [
+            {
+              id: 'header-2',
+              type: 'shape',
+              shapeType: 'rectangle',
+              x: 0,
+              y: 0,
+              width: 800,
+              height: 60,
+              fillColor: '#e74c3c',
+              borderColor: '#c0392b',
+              borderWidth: 0,
+              zIndex: 1
+            },
+            {
+              id: 'title-2',
+              type: 'text',
+              content: '詳細分析',
+              x: 30,
+              y: 10,
+              width: 740,
+              height: 40,
+              fontSize: 28,
+              fontWeight: 'bold',
+              color: '#ffffff',
+              textAlign: 'left',
+              zIndex: 2
+            },
+            {
+              id: 'content-2',
+              type: 'text',
+              content: 'データ分析結果やトレンドについて詳しく説明します。',
+              x: 50,
+              y: 100,
+              width: 700,
+              height: 300,
+              fontSize: 16,
+              fontWeight: 'normal',
+              color: '#2c3e50',
+              textAlign: 'left',
+              zIndex: 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'education',
+      name: '教育・講義',
+      description: '授業や研修用のテンプレート',
+      preview: '#f39c12',
+      slides: [
+        {
+          id: 1,
+          title: '授業タイトル',
+          background: '#fff5e6',
+          elements: [
+            {
+              id: 'title-1',
+              type: 'text',
+              content: '第1回 授業タイトル',
+              x: 50,
+              y: 100,
+              width: 700,
+              height: 60,
+              fontSize: 36,
+              fontWeight: 'bold',
+              color: '#d35400',
+              textAlign: 'center',
+              zIndex: 1
+            },
+            {
+              id: 'objectives-1',
+              type: 'text',
+              content: '学習目標：\n• 目標1\n• 目標2\n• 目標3',
+              x: 100,
+              y: 200,
+              width: 600,
+              height: 120,
+              fontSize: 18,
+              fontWeight: 'normal',
+              color: '#8e44ad',
+              textAlign: 'left',
+              zIndex: 2
+            },
+            {
+              id: 'decoration-1',
+              type: 'shape',
+              shapeType: 'circle',
+              x: 650,
+              y: 350,
+              width: 100,
+              height: 100,
+              fillColor: '#f39c12',
+              borderColor: '#e67e22',
+              borderWidth: 3,
+              zIndex: 3
+            }
+          ]
+        },
+        {
+          id: 2,
+          title: '内容説明',
+          background: '#fff5e6',
+          elements: [
+            {
+              id: 'section-title',
+              type: 'text',
+              content: '今日の内容',
+              x: 50,
+              y: 50,
+              width: 700,
+              height: 50,
+              fontSize: 32,
+              fontWeight: 'bold',
+              color: '#d35400',
+              textAlign: 'left',
+              zIndex: 1
+            },
+            {
+              id: 'content-list',
+              type: 'text',
+              content: '1. イントロダクション\n2. 基本概念\n3. 実践例\n4. まとめ',
+              x: 80,
+              y: 120,
+              width: 640,
+              height: 200,
+              fontSize: 20,
+              fontWeight: 'normal',
+              color: '#2c3e50',
+              textAlign: 'left',
+              zIndex: 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'creative',
+      name: 'クリエイティブ',
+      description: 'カラフルでクリエイティブなデザイン',
+      preview: '#9b59b6',
+      slides: [
+        {
+          id: 1,
+          title: 'クリエイティブスライド',
+          background: '#2c3e50',
+          elements: [
+            {
+              id: 'bg-shape-1',
+              type: 'shape',
+              shapeType: 'circle',
+              x: -50,
+              y: -50,
+              width: 200,
+              height: 200,
+              fillColor: '#e74c3c',
+              borderColor: '#c0392b',
+              borderWidth: 0,
+              zIndex: 1
+            },
+            {
+              id: 'bg-shape-2',
+              type: 'shape',
+              shapeType: 'circle',
+              x: 650,
+              y: 300,
+              width: 150,
+              height: 150,
+              fillColor: '#f39c12',
+              borderColor: '#e67e22',
+              borderWidth: 0,
+              zIndex: 2
+            },
+            {
+              id: 'bg-shape-3',
+              type: 'shape',
+              shapeType: 'triangle',
+              x: 300,
+              y: 350,
+              width: 100,
+              height: 100,
+              fillColor: '#9b59b6',
+              borderColor: '#8e44ad',
+              borderWidth: 0,
+              zIndex: 3
+            },
+            {
+              id: 'main-title',
+              type: 'text',
+              content: 'クリエイティブ\nプレゼンテーション',
+              x: 200,
+              y: 150,
+              width: 400,
+              height: 120,
+              fontSize: 36,
+              fontWeight: 'bold',
+              color: '#ffffff',
+              textAlign: 'center',
+              zIndex: 4
+            },
+            {
+              id: 'accent-shape',
+              type: 'shape',
+              shapeType: 'rectangle',
+              x: 150,
+              y: 280,
+              width: 500,
+              height: 8,
+              fillColor: '#1abc9c',
+              borderColor: '#16a085',
+              borderWidth: 0,
+              zIndex: 5
+            }
+          ]
+        }
+      ]
+    }
+  ];
+
+  // テンプレートを適用
+  const applyTemplate = (template) => {
+    console.log('テンプレート適用:', template.name);
+    
+    // テンプレートのスライドをコピーして新しいIDを生成
+    const newSlides = template.slides.map((slide, slideIndex) => ({
+      ...slide,
+      id: Date.now() + slideIndex,
+      elements: slide.elements.map((element, elementIndex) => ({
+        ...element,
+        id: `${element.type}-${Date.now()}-${slideIndex}-${elementIndex}`
+      }))
+    }));
+    
+    setSlides(newSlides);
+    setCurrentSlideIndex(0);
+    setSelectedElement(null);
+    setShowTemplateModal(false);
+    
+    // 新しい状態を履歴に保存
+    saveToHistory(newSlides);
+    
+    console.log('テンプレート適用完了 - スライド数:', newSlides.length);
+  };
 
   // 履歴管理 - 修正版
   const saveToHistory = useCallback((newSlides) => {
@@ -1138,6 +1546,127 @@ const SlideEditor = () => {
     );
   }
 
+  // テンプレート選択モーダル
+  if (showTemplateModal) {
+    return (
+      <div className="template-modal-overlay">
+        <div className="template-modal">
+          <div className="template-modal-header">
+            <h2>テンプレートを選択</h2>
+            <button 
+              className="modal-close-btn"
+              onClick={() => setShowTemplateModal(false)}
+            >
+              ×
+            </button>
+          </div>
+          
+          <div className="template-grid">
+            {templates.map((template) => (
+              <div
+                key={template.id}
+                className="template-card"
+                onClick={() => applyTemplate(template)}
+              >
+                <div 
+                  className="template-preview"
+                  style={{ backgroundColor: template.slides[0].background }}
+                >
+                  {/* テンプレートのプレビューを表示 */}
+                  {template.slides[0].elements
+                    .slice(0, 3) // 最初の3要素のみ表示
+                    .sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0))
+                    .map((element) => {
+                      // テンプレート用の正確なスケール計算
+                      // template-previewは300pxなので、それに合わせる
+                      const templateScale = 300 / 800; // 0.375
+                      
+                      const scaledElement = {
+                        ...element,
+                        x: Math.round(element.x * templateScale),
+                        y: Math.round(element.y * templateScale),
+                        width: Math.max(1, Math.round(element.width * templateScale)),
+                        height: Math.max(1, Math.round(element.height * templateScale)),
+                        fontSize: Math.max(4, Math.round(element.fontSize * templateScale))
+                      };
+
+                      return (
+                        <div
+                          key={element.id}
+                          style={{
+                            position: 'absolute',
+                            left: scaledElement.x,
+                            top: scaledElement.y,
+                            width: scaledElement.width,
+                            height: scaledElement.height,
+                            fontSize: scaledElement.fontSize,
+                            fontWeight: element.fontWeight,
+                            color: element.color,
+                            textAlign: element.textAlign,
+                            zIndex: element.zIndex || 0,
+                            overflow: 'hidden',
+                            lineHeight: '1'
+                          }}
+                        >
+                          {element.type === 'text' && (
+                            <div style={{
+                              width: '100%',
+                              height: '100%',
+                              fontSize: 'inherit',
+                              fontWeight: 'inherit',
+                              color: 'inherit',
+                              textAlign: 'inherit',
+                              overflow: 'hidden',
+                              display: 'flex',
+                              alignItems: 'center',
+                              whiteSpace: 'pre-wrap',
+                              wordBreak: 'break-word'
+                            }}>
+                              {element.content || 'テキスト'}
+                            </div>
+                          )}
+                          {element.type === 'image' && (
+                            <img 
+                              src={element.src} 
+                              alt="プレビュー画像" 
+                              style={{ 
+                                width: '100%', 
+                                height: '100%', 
+                                objectFit: 'cover',
+                                display: 'block'
+                              }}
+                            />
+                          )}
+                          {element.type === 'shape' && renderThumbnailShape(element, templateScale)}
+                        </div>
+                      );
+                    })}
+                </div>
+                
+                <div className="template-info">
+                  <h3>{template.name}</h3>
+                  <p>{template.description}</p>
+                  <span className="template-slide-count">
+                    {template.slides.length}枚のスライド
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="template-modal-footer">
+            <button 
+              className="cancel-btn"
+              onClick={() => setShowTemplateModal(false)}
+            >
+              キャンセル
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="slide-editor">
       {/* 隠しファイル入力 */}
@@ -1156,9 +1685,18 @@ const SlideEditor = () => {
             <h3>スライド</h3>
             <span className="slide-count">({slides.length}枚)</span>
           </div>
-          <button className="add-slide-btn" onClick={addSlide}>
-            + 追加
-          </button>
+          <div className="sidebar-buttons">
+            <button 
+              className="template-btn"
+              onClick={() => setShowTemplateModal(true)}
+              title="テンプレートから作成"
+            >
+              📋 テンプレート
+            </button>
+            <button className="add-slide-btn" onClick={addSlide}>
+              + 追加
+            </button>
+          </div>
         </div>
         <div className="slide-thumbnails">
           {slides.map((slide, index) => {
@@ -1213,10 +1751,10 @@ const SlideEditor = () => {
                               color: 'inherit',
                               textAlign: 'inherit',
                               overflow: 'hidden',
-                              display: '-webkit-box',
-                              WebkitLineClamp: 3,
-                              WebkitBoxOrient: 'vertical',
-                              wordBreak: 'break-all'
+                              display: 'flex',
+                              alignItems: 'center',
+                              whiteSpace: 'pre-wrap',
+                              wordBreak: 'break-word'
                             }}>
                               {element.content || 'テキスト'}
                             </div>
@@ -1277,6 +1815,18 @@ const SlideEditor = () => {
       <div className="main-editor">
         {/* ツールバー */}
         <div className="toolbar">
+          <div className="toolbar-group">
+            <button 
+              onClick={() => window.location.href = '/'}
+              className="home-btn"
+              title="ホームに戻る"
+            >
+              ホーム
+            </button>
+          </div>
+          
+          <div className="toolbar-separator"></div>
+          
           <div className="toolbar-group">
             <button onClick={undo} disabled={historyIndex <= 0}>↶ 元に戻す</button>
             <button onClick={redo} disabled={historyIndex >= history.length - 1}>↷ やり直し</button>
