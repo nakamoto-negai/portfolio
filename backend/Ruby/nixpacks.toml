@@ -1,0 +1,5 @@
+[phases.build]
+aptPkgs = ["libpq-dev"]
+
+[start]
+cmd = "bundle exec rails server -b 0.0.0.0 -p $PORT"
