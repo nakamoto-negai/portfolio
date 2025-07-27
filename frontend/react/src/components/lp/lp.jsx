@@ -1,6 +1,6 @@
 import { useState, useEffect, use } from 'react';
 import './lp.css';
-import { checkLoginStatus, logoutUser } from '../../api/auth';
+import { checkLoginStatus } from '../../api/auth';
 import { useAuth } from '../../hooks/useAuth'; 
 import { fetchUsers } from '../../api/users';
 import { useNavigate } from 'react-router-dom';
@@ -63,10 +63,6 @@ const Lpsite = () => {
         // 新規登録ページへ遷移
         navigate('/register');   
         break;
-      case 'messages':
-        // メッセージページへ遷移
-        navigate('/messages')
-        break;
       case 'my-portfolios':
         // 自分の作品一覧へ遷移
         navigate('/my-portfolios')
@@ -82,15 +78,6 @@ const Lpsite = () => {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await logoutUser();
-      setUser(null); // ログアウト後にユーザー情報をクリア
-      navigate('/'); // ホームへリダイレクト
-    } catch (err) {
-      console.error('ログアウト失敗:', err.response?.data || err.message);
-    }
-  };
   
   if(loading) return <div> Loading... </div>
   
@@ -112,12 +99,7 @@ const Lpsite = () => {
               >
                 {user.name}
               </span>
-              <span className="separator">|</span>
-              <span className="nav-link" 
-                    onClick={() => handleNavigation('messages')}
-              >
-                messages
-              </span>      
+      
             </div>
           ) : (
             <div>

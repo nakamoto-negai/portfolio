@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_many :portfolios, dependent: :destroy
   has_many :likes, dependent: :destroy
   has_many :liked_portfolios, through: :likes, source: :portfolio
+  has_many :comments, dependent: :destroy
   
   # メッセージ関連のアソシエーション
   has_many :sent_messages, class_name: 'Message', foreign_key: 'sender_id', dependent: :destroy

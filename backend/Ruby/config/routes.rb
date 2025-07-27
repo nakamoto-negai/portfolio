@@ -38,6 +38,8 @@ Rails.application.routes.draw do
           put :reorder
         end
       end
+      # コメント機能を追加
+      resources :comments, only: [:index, :create, :update, :destroy]
     end
 
     # API v1 namespace for legacy support

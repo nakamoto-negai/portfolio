@@ -15,10 +15,10 @@ module Api
     def published
       if current_user
         # ログイン中の場合は自分以外のポートフォリオを表示
-        @portfolios = Portfolio.published.includes(:user, :slides, :powerpoints).where.not(user: current_user).recent
+        @portfolios = Portfolio.published.includes(:user, :slides, :powerpoints, :comments).where.not(user: current_user).recent
       else
         # 未ログインの場合は全ての公開ポートフォリオを表示
-        @portfolios = Portfolio.published.includes(:user, :slides, :powerpoints).recent
+        @portfolios = Portfolio.published.includes(:user, :slides, :powerpoints, :comments).recent
       end
       
       render json: @portfolios.as_json(
@@ -30,6 +30,7 @@ module Api
           :total_powerpoint_size, 
           :latest_powerpoint_filename,
           :likes_count,
+          :comments_count,
           :has_main_image?,
           :main_image_url
         ],
@@ -54,6 +55,7 @@ module Api
           :total_powerpoint_size, 
           :latest_powerpoint_filename,
           :likes_count,
+          :comments_count,
           :has_main_image?,
           :main_image_url
         ]
@@ -72,6 +74,7 @@ module Api
           :total_powerpoint_size, 
           :latest_powerpoint_filename,
           :likes_count,
+          :comments_count,
           :has_main_image?,
           :main_image_url
         ]
