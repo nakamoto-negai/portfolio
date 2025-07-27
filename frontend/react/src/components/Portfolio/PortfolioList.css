@@ -121,11 +121,7 @@
   box-shadow: 0 8px 25px rgba(181, 172, 152, 0.4);
 }
 
-/* デバッグ用 - 一時的に目立つ色にする */
-.home-button-fixed {
-  /* background: red !important; */
-  /* color: white !important; */
-}
+
 
 .home-button {
   display: flex;
