@@ -15,7 +15,16 @@ module Api
     def published
       @portfolios = Portfolio.published.includes(:user).recent
       render json: @portfolios.as_json(
-        only: [:id, :title, :description, :created_at, :updated_at],
+        only: [:id, :title, :description, :created_at, :updated_at, :user_id],
+        methods: [
+          :slides_count, 
+          :powerpoints_count, 
+          :total_powerpoint_size, 
+          :latest_powerpoint_filename,
+          :likes_count,
+          :has_main_image?,
+          :main_image_url
+        ],
         include: { user: { only: [:id, :name] } }
       )
     end

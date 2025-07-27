@@ -51,9 +51,9 @@ const Lpsite = () => {
         // 創る - SlideEditorページへ遷移
         navigate('/SlideEditor');
         break;
-      case 'connect':
+      case 'portfolios':
         // 繋がる - コンタクトページなど
-        navigate('/contact');
+        navigate('/portfolios');
         break;
       case 'login':
         // ログインページへ遷移
@@ -66,6 +66,10 @@ const Lpsite = () => {
       case 'messages':
         // メッセージページへ遷移
         navigate('/messages')
+        break;
+      case 'contact':
+        // 自分の作品一覧へ遷移
+        navigate('/contact')
         break;
       case 'home':
         // ホームページへ遷移
@@ -104,7 +108,7 @@ const Lpsite = () => {
           {user ? (
             <div>
               <span className="nav-link"
-                onClick={() => handleNavigation('profile')}
+                onClick={() => handleNavigation('portfolios')}
               >
                 {user.name}
               </span>
@@ -169,7 +173,7 @@ const Lpsite = () => {
             <span className="separator">|</span>
             <span 
               className="nav-link" 
-              onClick={() => handleNavigation('connect')}
+              onClick={() => handleNavigation('portfolios')}
             >
               繋がる
             </span>
