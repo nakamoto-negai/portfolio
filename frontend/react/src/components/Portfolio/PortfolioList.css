@@ -414,6 +414,7 @@
 }
 
 .powerpoint-button {
+  display: none;
   background: rgba(245, 158, 11, 0.1);
   color: #fbbf24;
 }
@@ -431,6 +432,35 @@
 .detail-button:hover {
   background: rgba(107, 114, 128, 0.2);
   color: #d1d5db;
+}
+
+.message-button {
+  background: rgba(34, 197, 94, 0.1);
+  color: #4ade80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.message-button:hover {
+  background: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+}
+
+.message-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.portfolio-author {
+  margin-bottom: 0.5rem;
+}
+
+.author-name {
+  font-size: 0.85rem;
+  color: rgba(181, 172, 152, 0.8);
+  font-weight: 500;
 }
 
 .edit-button {

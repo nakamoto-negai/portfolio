@@ -45,7 +45,7 @@ const PortfolioDetail = () => {
       <div className="portfolio-detail-container">
         <div className="error-wrapper">
           <p className="error-text">エラー: {error}</p>
-          <button onClick={() => navigate('/contact')} className="back-button">
+          <button onClick={() => navigate('/portfolios')} className="back-button">
             一覧に戻る
           </button>
         </div>
@@ -58,7 +58,7 @@ const PortfolioDetail = () => {
       <div className="portfolio-detail-container">
         <div className="error-wrapper">
           <p className="error-text">ポートフォリオが見つかりません</p>
-          <button onClick={() => navigate('/contact')} className="back-button">
+          <button onClick={() => navigate('/portfolios')} className="back-button">
             一覧に戻る
           </button>
         </div>
@@ -73,7 +73,7 @@ const PortfolioDetail = () => {
     <div className="portfolio-detail-container">
       <div className="detail-wrapper">
         <header className="detail-header">
-          <button onClick={() => navigate('/contact')} className="back-button">
+          <button onClick={() => navigate('/portfolios')} className="back-button">
             <svg className="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path d="M19 12H5"></path>
               <polyline points="12,19 5,12 12,5"></polyline>
