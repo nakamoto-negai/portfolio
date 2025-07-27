@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { createPortfolio } from '../../api/portfolios';
 import './PortfolioUpload.css';
 
 const PortfolioUpload = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -13,6 +14,49 @@ const PortfolioUpload = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+
+  // SlideEditorから生成されたファイルを自動選択
+  useEffect(() => {
+    // SlideEditorからの遷移の場合のみ自動選択を実行
+    if (!location.state?.fromSlideEditor) {
+      return;
+    }
+    
+    const loadGeneratedFile = async () => {
+      try {
+        const storedFileData = sessionStorage.getItem('generatedPptxFile');
+        if (storedFileData) {
+          const fileData = JSON.parse(storedFileData);
+          
+          // ArrayBufferから復元
+          const uint8Array = new Uint8Array(fileData.arrayBuffer);
+          const blob = new Blob([uint8Array], { type: fileData.type });
+          const file = new File([blob], fileData.name, { type: fileData.type });
+          
+          setSelectedFiles([file]);
+          
+          // デフォルトのタイトルを設定
+          const timestamp = new Date(fileData.timestamp);
+          const defaultTitle = `プレゼンテーション ${timestamp.toLocaleDateString()}`;
+          setFormData(prev => ({
+            ...prev,
+            title: defaultTitle
+          }));
+          
+          // セッションストレージをクリア
+          sessionStorage.removeItem('generatedPptxFile');
+          
+          console.log('SlideEditorで生成されたファイルを自動選択しました:', fileData.name);
+        }
+      } catch (error) {
+        console.error('生成されたファイルの読み込みに失敗:', error);
+        // エラーが発生してもセッションストレージはクリア
+        sessionStorage.removeItem('generatedPptxFile');
+      }
+    };
+    
+    loadGeneratedFile();
+  }, [location.state]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -78,7 +122,7 @@ const PortfolioUpload = () => {
       alert('ポートフォリオが正常に作成されました！');
       setFormData({ title: '', description: '', is_public: false });
       setSelectedFiles([]);
-      navigate('/portfolios'); // ポートフォリオ一覧ページにリダイレクト
+      navigate('/my-portfolios'); // ポートフォリオ一覧ページにリダイレクト
     } catch (error) {
       console.error('Error uploading portfolio:', error);
       const errorMessage = error.response?.data?.message || 'アップロードに失敗しました。もう一度お試しください。';
