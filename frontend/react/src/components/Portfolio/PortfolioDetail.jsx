@@ -173,7 +173,7 @@ const PortfolioDetail = () => {
 
           {portfolio.main_image_url && (
             <div className="main-image-section">
-              <h2 className="section-title">メイン画像</h2>
+              <h2 className="section-title">表紙</h2>
               <div className="main-image-container">
                 <img 
                   src={portfolio.main_image_url} 
@@ -221,7 +221,7 @@ const PortfolioDetail = () => {
               
               {portfolio.slides_count > 0 && (
                 <button 
-                  onClick={() => navigate(`/portfolio/${portfolio.id}/slideshow`)}
+                  onClick={() => navigate(`/portfolio/${portfolio.id}/slideshow`, { state: { from: getReturnPath() } })}
                   className="action-btn slideshow-btn"
                 >
                   <svg className="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">

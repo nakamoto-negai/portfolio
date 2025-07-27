@@ -65,7 +65,16 @@ module Api
     def show
       render json: @portfolio.as_json(
         only: [:id, :title, :description, :is_public, :created_at, :updated_at],
-        include: { user: { only: [:id, :name] } }
+        include: { user: { only: [:id, :name] } },
+        methods: [
+          :slides_count, 
+          :powerpoints_count, 
+          :total_powerpoint_size, 
+          :latest_powerpoint_filename,
+          :likes_count,
+          :has_main_image?,
+          :main_image_url
+        ]
       )
     end
 

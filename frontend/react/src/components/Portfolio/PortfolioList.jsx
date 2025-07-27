@@ -261,7 +261,7 @@ const PortfolioList = () => {
                     className="action-button view-button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/portfolio/${portfolio.id}/slideshow`);
+                      navigate(`/portfolio/${portfolio.id}/slideshow`, { state: { from: '/portfolios' } });
                     }}
                   >
                     表示

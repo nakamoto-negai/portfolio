@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getPortfolio, getPortfolioSlides } from '../../api/portfolios';
+import { useAuth } from '../../hooks/useAuth';
 import './SlideShow.css';
 
 // 画像URLを正規化する関数
@@ -20,6 +21,8 @@ const normalizeImageUrl = (url) => {
 const SlideShow = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useAuth();
   const containerRef = useRef(null);
   const [portfolio, setPortfolio] = useState(null);
   const [slides, setSlides] = useState([]);
@@ -114,6 +117,18 @@ const SlideShow = () => {
     }
   };
 
+  // Determine return path based on state or portfolio ownership
+  const getReturnPath = () => {
+    if (location.state?.from) {
+      return location.state.from;
+    }
+    // If user owns the portfolio, return to my-portfolios
+    if (portfolio && user && portfolio.user && user.id === portfolio.user.id) {
+      return '/my-portfolios';
+    }
+    return '/portfolios';
+  };
+
   const goToSlide = (index) => {
     setCurrentSlide(index);
   };
@@ -134,7 +149,7 @@ const SlideShow = () => {
       <div className="slideshow-container">
         <div className="error-wrapper">
           <p className="error-text">エラー: {error}</p>
-          <button onClick={() => navigate('/portfolios')} className="back-button">
+          <button onClick={() => navigate(getReturnPath())} className="back-button">
             一覧に戻る
           </button>
         </div>
@@ -147,7 +162,7 @@ const SlideShow = () => {
       <div className="slideshow-container">
         <div className="error-wrapper">
           <p className="error-text">スライドが見つかりません</p>
-          <button onClick={() => navigate('/portfolios')} className="back-button">
+          <button onClick={() => navigate(getReturnPath())} className="back-button">
             一覧に戻る
           </button>
         </div>
@@ -168,7 +183,7 @@ const SlideShow = () => {
       {/* Header */}
       <header className="slideshow-header">
         <div className="header-left">
-          <button onClick={() => navigate('/portfolios')} className="back-button">
+          <button onClick={() => navigate(getReturnPath())} className="back-button">
             <svg className="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path d="M19 12H5"></path>
               <polyline points="12,19 5,12 12,5"></polyline>
