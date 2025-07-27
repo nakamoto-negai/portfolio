@@ -34,7 +34,7 @@ class PortfoliosController < ApplicationController
   # POST /portfolios
   def create
     @portfolio = Portfolio.new(portfolio_params)
-    
+    @portfolio.user = current_user
     # PowerPointファイルを一時的に保存
     @portfolio.powerpoint_files = params[:portfolio][:powerpoint_files] if params[:portfolio][:powerpoint_files]
     
