@@ -36,3 +36,12 @@ export const deletePortfolio = (id) =>
 // ポートフォリオのスライド一覧取得
 export const getPortfolioSlides = (portfolioId) =>
   apiClient.get(`/portfolios/${portfolioId}/slides`);
+
+// SlideEditorからのポートフォリオ作成 (JSONデータを送信)
+export const createPortfolioFromSlides = (portfolioData) => {
+  return apiClient.post('/portfolios/from_slides', { portfolio: portfolioData }, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};

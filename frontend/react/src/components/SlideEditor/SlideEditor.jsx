@@ -1,7 +1,11 @@
 import React, { useState, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { createPortfolioFromSlides, createPortfolio } from '../../api/portfolios';
 import './SlideEditor.css';
 
 const SlideEditor = () => {
+  const navigate = useNavigate();
+  
   // スライドのデータ構造
   const [slides, setSlides] = useState([
     {
@@ -61,6 +65,13 @@ const SlideEditor = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadFormData, setUploadFormData] = useState({
+    title: '',
+    description: '',
+    is_public: false
+  });
+  const [isUploading, setIsUploading] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -936,6 +947,93 @@ const SlideEditor = () => {
     }
   };
 
+  // ポートフォリオとしてアップロード
+  const uploadToPortfolio = async () => {
+    if (isUploading) return;
+    
+    setIsUploading(true);
+    try {
+      console.log('ポートフォリオアップロード開始...');
+      
+      // スライドデータを整理
+      const portfolioData = {
+        title: uploadFormData.title,
+        description: uploadFormData.description,
+        is_public: uploadFormData.is_public,
+        slides_data: {
+          slides: slides,
+          metadata: {
+            created_with: 'SlideEditor',
+            created_at: new Date().toISOString(),
+            slide_count: slides.length
+          }
+        }
+      };
+      
+      // 最初に新しいAPIエンドポイントを試行
+      let response;
+      try {
+        response = await createPortfolioFromSlides(portfolioData);
+      } catch (apiError) {
+        if (apiError.response?.status === 404) {
+          console.log('新しいAPIが利用できません。代替方法を使用します...');
+          
+          // 代替案：SlideEditorデータをJSONファイルとして保存し、既存のAPIを使用
+          const slidesDataBlob = new Blob([JSON.stringify({
+            slides: slides,
+            metadata: {
+              created_with: 'SlideEditor',
+              created_at: new Date().toISOString(),
+              slide_count: slides.length
+            }
+          })], { type: 'application/json' });
+          
+          const slidesFile = new File([slidesDataBlob], 'slides_data.json', { type: 'application/json' });
+          
+          const formData = new FormData();
+          formData.append('portfolio[title]', uploadFormData.title);
+          formData.append('portfolio[description]', uploadFormData.description + '\n\n[SlideEditorで作成]');
+          formData.append('portfolio[is_public]', uploadFormData.is_public);
+          formData.append('portfolio[powerpoint_files][]', slidesFile);
+          
+          response = await createPortfolio(formData);
+        } else {
+          throw apiError;
+        }
+      }
+      
+      console.log('アップロード成功:', response.data);
+      alert('ポートフォリオが正常に作成されました！');
+      
+      // フォームをリセット
+      setUploadFormData({
+        title: '',
+        description: '',
+        is_public: false
+      });
+      setShowUploadModal(false);
+      
+      // ポートフォリオ一覧ページにリダイレクト
+      navigate('/portfolios');
+      
+    } catch (error) {
+      console.error('アップロードエラー:', error);
+      const errorMessage = error.response?.data?.message || 'アップロードに失敗しました。もう一度お試しください。';
+      alert(errorMessage);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // アップロードフォームの入力ハンドラー
+  const handleUploadFormChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setUploadFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
   // プレビューでのスライド切り替え
   const nextSlide = () => {
     setPreviewSlideIndex((prev) => Math.min(prev + 1, slides.length - 1));
@@ -1667,6 +1765,134 @@ const SlideEditor = () => {
     );
   }
 
+  // アップロードモーダル
+  if (showUploadModal) {
+    return (
+      <div className="template-modal-overlay">
+        <div className="template-modal">
+          <div className="template-modal-header">
+            <h2>ギャラリーに投稿</h2>
+            <button 
+              className="modal-close-btn"
+              onClick={() => setShowUploadModal(false)}
+            >
+              ×
+            </button>
+          </div>
+          
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            uploadToPortfolio();
+          }} className="upload-form-modal">
+            
+            <div className="form-section">
+              <div className="form-group">
+                <label htmlFor="upload-title" className="form-label">タイトル</label>
+                <input
+                  type="text"
+                  id="upload-title"
+                  name="title"
+                  value={uploadFormData.title}
+                  onChange={handleUploadFormChange}
+                  className="form-input"
+                  placeholder="ポートフォリオのタイトルを入力してください"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="upload-description" className="form-label">説明</label>
+                <textarea
+                  id="upload-description"
+                  name="description"
+                  value={uploadFormData.description}
+                  onChange={handleUploadFormChange}
+                  rows={4}
+                  className="form-textarea"
+                  placeholder="ポートフォリオの説明を入力してください"
+                />
+              </div>
+
+              <div className="form-group checkbox-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="is_public"
+                    checked={uploadFormData.is_public}
+                    onChange={handleUploadFormChange}
+                    className="form-checkbox"
+                  />
+                  <span className="checkbox-text">公開する</span>
+                </label>
+                <p className="checkbox-description">
+                  チェックすると他のユーザーがこのポートフォリオを閲覧できます
+                </p>
+              </div>
+
+              <div className="slides-preview">
+                <h4>投稿するスライド: {slides.length}枚</h4>
+                <div className="slides-preview-grid">
+                  {slides.slice(0, 3).map((slide, index) => (
+                    <div key={slide.id} className="slide-preview-mini">
+                      <div 
+                        className="mini-thumbnail"
+                        style={{ backgroundColor: slide.background }}
+                      >
+                        {slide.elements
+                          .sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0))
+                          .slice(0, 2)
+                          .map((element) => (
+                            <div
+                              key={element.id}
+                              style={{
+                                position: 'absolute',
+                                left: `${(element.x / 800) * 100}%`,
+                                top: `${(element.y / 450) * 100}%`,
+                                width: `${(element.width / 800) * 100}%`,
+                                height: `${(element.height / 450) * 100}%`,
+                                fontSize: `${Math.max(4, element.fontSize * 0.1)}px`,
+                                color: element.color,
+                                overflow: 'hidden'
+                              }}
+                            >
+                              {element.type === 'text' && element.content}
+                            </div>
+                          ))}
+                      </div>
+                      <span className="mini-title">{slide.title}</span>
+                    </div>
+                  ))}
+                  {slides.length > 3 && (
+                    <div className="slides-more">
+                      +{slides.length - 3}枚
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            <div className="template-modal-footer">
+              <button 
+                type="button"
+                className="cancel-btn"
+                onClick={() => setShowUploadModal(false)}
+              >
+                キャンセル
+              </button>
+              <button 
+                type="submit"
+                className="upload-submit-btn"
+                disabled={isUploading || !uploadFormData.title}
+              >
+                {isUploading ? 'アップロード中...' : 'ギャラリーに投稿'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="slide-editor">
       {/* 隠しファイル入力 */}
@@ -1886,6 +2112,13 @@ const SlideEditor = () => {
               disabled={isExporting}
             >
               {isExporting ? '📥 生成中...' : '📥 PowerPoint出力'}
+            </button>
+            <button 
+              onClick={() => setShowUploadModal(true)}
+              className="upload-btn"
+              disabled={slides.length === 0}
+            >
+              📤 ギャラリーに投稿
             </button>
           </div>
           

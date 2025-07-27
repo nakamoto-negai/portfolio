@@ -7,8 +7,12 @@ class Slide < ApplicationRecord
 
   # バリデーション
   validates :portfolio_id, presence: true
-  validates :page_number, presence: true, uniqueness: { scope: :portfolio_id }
-  validates :page_number, numericality: { greater_than: 0 }
+  validates :page_number, presence: true, uniqueness: { scope: :portfolio_id }, unless: :editor_slide?
+  validates :page_number, numericality: { greater_than: 0 }, unless: :editor_slide?
+  
+  # SlideEditor用のバリデーション
+  validates :title, presence: true, if: :editor_slide?
+  validates :order_index, presence: true, if: :editor_slide?
   
   # コールバック
   before_validation :set_page_number, on: :create
@@ -60,10 +64,15 @@ class Slide < ApplicationRecord
     image.attached?
   end
 
+  # SlideEditorで作成されたスライドかどうか
+  def editor_slide?
+    slide_type == 'editor_slide'
+  end
+
   private
   
   def set_page_number
-    return if page_number.present?
+    return if page_number.present? || editor_slide?
     
     max_page = portfolio.slides.maximum(:page_number) || 0
     self.page_number = max_page + 1

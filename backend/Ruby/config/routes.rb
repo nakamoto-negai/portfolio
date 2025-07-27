@@ -24,6 +24,9 @@ Rails.application.routes.draw do
         # GET /api/portfolios/my
         # 自分のポートフォリオ一覧を取得
         get :my
+        # POST /api/portfolios/from_slides
+        # SlideEditorからのポートフォリオ作成
+        post :from_slides
       end
       resources :slides, only: [:index, :create, :update, :destroy] do
         collection do

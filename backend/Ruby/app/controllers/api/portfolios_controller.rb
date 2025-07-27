@@ -120,6 +120,42 @@ module Api
       render json: { message: 'Portfolio deleted successfully' }, status: :ok
     end
 
+    # POST /api/portfolios/from_slides
+    # SlideEditorからのポートフォリオ作成
+    def from_slides
+      unless current_user
+        render json: { error: 'ログインが必要です' }, status: :unauthorized
+        return
+      end
+      
+      begin
+        @portfolio = Portfolio.new(slides_portfolio_params)
+        @portfolio.user = current_user
+        
+        if @portfolio.save
+          # SlideEditorのデータをSlidesとして保存
+          if params[:portfolio][:slides_data] && params[:portfolio][:slides_data][:slides]
+            create_slides_from_editor_data(@portfolio, params[:portfolio][:slides_data][:slides])
+          end
+          
+          render json: {
+            portfolio: @portfolio.as_json(
+              only: [:id, :title, :description, :is_public, :created_at, :updated_at],
+              include: { user: { only: [:id, :name] } },
+              methods: [:slides_count]
+            ),
+            message: 'Portfolio created successfully from SlideEditor'
+          }, status: :created
+        else
+          render json: @portfolio.errors, status: :unprocessable_entity
+        end
+      rescue => e
+        Rails.logger.error "Error creating portfolio from slides: #{e.message}"
+        Rails.logger.error e.backtrace.join("\n")
+        render json: { error: 'ポートフォリオの作成中にエラーが発生しました' }, status: :internal_server_error
+      end
+    end
+
     private
 
     # ポートフォリオ取得
@@ -130,6 +166,39 @@ module Api
     # Strong Parameters
     def portfolio_params
       params.require(:portfolio).permit(:title, :description, :user_id, :is_public)
+    end
+
+    # SlideEditor用のStrong Parameters
+    def slides_portfolio_params
+      params.require(:portfolio).permit(:title, :description, :is_public)
+    end
+
+    # SlideEditorのデータからSlidesを作成
+    def create_slides_from_editor_data(portfolio, slides_data)
+      slides_data.each_with_index do |slide_data, index|
+        slide = portfolio.slides.build(
+          title: slide_data[:title] || "スライド #{index + 1}",
+          content: slide_data.to_json, # 全データをJSONとして保存
+          order_index: index,
+          slide_type: 'editor_slide',
+          page_number: nil # editor_slideの場合はpage_numberを使わない
+        )
+        
+        # 背景色があれば保存
+        if slide_data[:background]
+          slide.background_color = slide_data[:background]
+        end
+        
+        # エラーハンドリング付きで保存
+        unless slide.save
+          Rails.logger.error "Failed to save slide #{index}: #{slide.errors.full_messages}"
+          raise "スライド #{index + 1} の保存に失敗しました: #{slide.errors.full_messages.join(', ')}"
+        end
+        
+        Rails.logger.info "Created slide #{index + 1} for portfolio #{portfolio.id}"
+      end
+      
+      Rails.logger.info "Successfully created #{slides_data.length} slides for portfolio #{portfolio.id}"
     end
   end
 end
