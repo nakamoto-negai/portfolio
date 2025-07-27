@@ -1,0 +1,101 @@
+<div class="slideshow-container">
+  <div id="slideCarousel" class="carousel slide" data-bs-ride="false">
+    <div class="carousel-inner">
+      <% @slides.each_with_index do |slide, index| %>
+        <div class="carousel-item <%= 'active' if index == 0 %>">
+          <img src="<%= slide.image_url %>" class="slide-image" alt="Slide <%= slide.page_number %>">
+        </div>
+      <% end %>
+    </div>
+    
+    <!-- Navigation buttons -->
+    <% if @slides.count > 1 %>
+      <button class="carousel-control-prev slide-nav left" type="button" data-bs-target="#slideCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next slide-nav right" type="button" data-bs-target="#slideCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    <% end %>
+  </div>
+</div>
+
+<!-- Controls -->
+<div class="slideshow-controls">
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-outline-light btn-sm" id="prevSlide">
+      <i class="fas fa-step-backward"></i>
+    </button>
+    <button type="button" class="btn btn-outline-light btn-sm" id="playPause">
+      <i class="fas fa-play"></i>
+    </button>
+    <button type="button" class="btn btn-outline-light btn-sm" id="nextSlide">
+      <i class="fas fa-step-forward"></i>
+    </button>
+    <%= link_to @portfolio, class: "btn btn-outline-light btn-sm" do %>
+      <i class="fas fa-times"></i> 終了
+    <% end %>
+  </div>
+  
+  <div class="text-center mt-2">
+    <small class="text-light">
+      <span id="currentSlide">1</span> / <%= @slides.count %> - <%= @portfolio.title %>
+    </small>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const carousel = new bootstrap.Carousel('#slideCarousel');
+  const playPauseBtn = document.getElementById('playPause');
+  const prevBtn = document.getElementById('prevSlide');
+  const nextBtn = document.getElementById('nextSlide');
+  const currentSlideSpan = document.getElementById('currentSlide');
+  
+  let isPlaying = false;
+  let intervalId = null;
+  
+  // Play/Pause functionality
+  playPauseBtn.addEventListener('click', function() {
+    if (isPlaying) {
+      clearInterval(intervalId);
+      playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+      isPlaying = false;
+    } else {
+      intervalId = setInterval(() => {
+        carousel.next();
+      }, 3000);
+      playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+      isPlaying = true;
+    }
+  });
+  
+  // Navigation
+  prevBtn.addEventListener('click', () => carousel.prev());
+  nextBtn.addEventListener('click', () => carousel.next());
+  
+  // Update slide counter
+  document.getElementById('slideCarousel').addEventListener('slide.bs.carousel', function(event) {
+    currentSlideSpan.textContent = event.to + 1;
+  });
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', function(event) {
+    switch(event.key) {
+      case 'ArrowLeft':
+        carousel.prev();
+        break;
+      case 'ArrowRight':
+      case ' ':
+        event.preventDefault();
+        carousel.next();
+        break;
+      case 'Escape':
+        window.location.href = '<%= portfolio_path(@portfolio) %>';
+        break;
+    }
+  });
+});
+</script>

@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+
+# ログファイル
+*.log
+log/*
+
+# 一時ファイル
+tmp/*
+!tmp/.keep
+
+# ローカル設定
+.env
+.env.local
+.env.*.local
+
+# エディタ設定
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+
+# Ruby/Rails固有
+vendor/bundle
+.bundle/
+coverage/
+.byebug_history
+.rspec
+
+# テストファイル
+spec/
+test/
+
+# ドキュメント
+README.md
+*.md
+doc/
+
+# node_modules（もしあれば）
+node_modules/
+
+# キャッシュ
+.cache/

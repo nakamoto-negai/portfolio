@@ -1,0 +1,33 @@
+.sidebar {
+  border-right: solid 2px #d0ccb9;
+  width: 16rem; /* 64 */
+  background-color: #2b2d33;
+  height: 100%;
+  padding: 2rem 3rem;
+  background: none;
+}
+
+.sidebar-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: #cccccc;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+
+.sidebar-subtitle {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 1.5rem; /* text-2xl */
+  margin-bottom: 1rem;
+  color: #d0ccb9;
+}
+
+.conversation-list {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  color: #fff;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

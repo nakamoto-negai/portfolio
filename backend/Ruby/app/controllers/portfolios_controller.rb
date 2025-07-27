@@ -1,0 +1,82 @@
+class PortfoliosController < ApplicationController
+  before_action :set_portfolio, only: [:show, :edit, :update, :destroy, :slideshow, :extract_main_image]
+
+  # GET /portfolios
+  def index
+    @portfolios = Portfolio.published.recent.includes(:slides,:powerpoints)
+  end
+  
+  # GET /portfolios/:id
+  def show
+    @powerpoints = @portfolio.powerpoints
+  end
+
+   def slideshow
+    @slides = @portfolio.ordered_slides
+    render layout: 'slideshow' # 専用のレイアウトを使用
+  end
+
+  def extract_main_image
+    if @portfolio.extract_main_image_from_powerpoint!
+      redirect_to @portfolio, notice: 'メイン画像を正常に抽出しました。'
+    else
+      redirect_to @portfolio, alert: 'メイン画像の抽出に失敗しました。PowerPointファイルに画像が含まれていない可能性があります。'
+    end
+  end
+  
+  # GET /portfolios/new
+  def new
+    @portfolio = Portfolio.new
+  end
+
+
+  
+  # POST /portfolios
+  def create
+    @portfolio = Portfolio.new(portfolio_params)
+    @portfolio.user = current_user
+    # PowerPointファイルを一時的に保存
+    @portfolio.powerpoint_files = params[:portfolio][:powerpoint_files] if params[:portfolio][:powerpoint_files]
+    
+    if @portfolio.save
+      if params[:portfolio][:powerpoint_files]
+        # 1つ目のファイルをPowerPointモデルとして保存
+        powerpoint = @portfolio.powerpoints.create(file: params[:portfolio][:powerpoint_files].first)
+        PowerpointImageExtractorService.new(@portfolio, powerpoint).extract_main_image
+        PowerpointImageExtractorService.new(@portfolio, powerpoint).extract_all_slide_images
+      end
+      redirect_to @portfolio, notice: 'ポートフォリオが正常に作成されました。'
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+  
+  # GET /portfolios/:id/edit
+  def edit
+  end
+  
+  # PATCH/PUT /portfolios/:id
+  def update
+    if @portfolio.update(portfolio_params)
+      redirect_to @portfolio, notice: 'ポートフォリオが正常に更新されました。'
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+  
+  # DELETE /portfolios/:id
+  def destroy
+    @portfolio.destroy
+    redirect_to portfolios_path, notice: 'ポートフォリオが削除されました。'
+  end
+  
+  private
+  
+  def set_portfolio
+    @portfolio = Portfolio.find(params[:id])
+  end
+  
+  def portfolio_params
+    params.require(:portfolio).permit(:title, :description, :is_public)
+  end
+end

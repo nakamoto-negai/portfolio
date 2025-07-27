@@ -2,9 +2,11 @@ class Slide < ApplicationRecord
   # アソシエーション
   belongs_to :portfolio
   
+  # ActiveStorage
+  has_one_attached :image
+
   # バリデーション
   validates :portfolio_id, presence: true
-  validates :image_url, presence: true, format: { with: URI::DEFAULT_PARSER.make_regexp(%w[http https]) }
   validates :page_number, presence: true, uniqueness: { scope: :portfolio_id }
   validates :page_number, numericality: { greater_than: 0 }
   
@@ -31,6 +33,33 @@ class Slide < ApplicationRecord
     page_number == portfolio.slides.maximum(:page_number)
   end
   
+   # スライドショー関連のヘルパーメソッド
+  def slideshow_url
+    Rails.application.routes.url_helpers.portfolio_slideshow_path(portfolio)
+  end
+
+  def portfolio_url
+    Rails.application.routes.url_helpers.portfolio_path(portfolio)
+  end
+
+  # 画像URL取得メソッド
+  def image_url
+    # ActiveStorageの画像が添付されている場合はそれを使用
+    if image.attached?
+      # 開発環境のデフォルトホスト設定
+      host = Rails.env.development? ? 'localhost:3000' : 'production-host.com'
+      
+      Rails.application.routes.url_helpers.rails_blob_url(image, host: host)
+    else
+      # DBのimage_urlカラムがある場合はそれを使用
+      read_attribute(:image_url)
+    end
+  end
+  
+  def has_image?
+    image.attached?
+  end
+
   private
   
   def set_page_number
