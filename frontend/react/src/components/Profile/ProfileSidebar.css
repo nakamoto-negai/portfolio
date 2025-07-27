@@ -151,8 +151,28 @@
   align-self: flex-start;
 }
 
+.logout-button {
+  background: linear-gradient(135deg, #bd1717 0%, #f45e5ec3 100%);
+  color: #a5a5a5;
+  border: none;
+  margin: 0.75rem 3.2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  align-self: flex-start;
+}
+
 .edit-button:hover {
   background: linear-gradient(135deg, #9e9584 0%, #8a8470 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(181, 172, 152, 0.3);
+}
+
+.logout-button:hover {
+  background: linear-gradient(135deg, #e26868 0%, #8a8470 100%);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(181, 172, 152, 0.3);
 }

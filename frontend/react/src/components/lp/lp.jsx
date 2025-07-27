@@ -82,7 +82,7 @@ const Lpsite = () => {
     try {
       await logoutUser();
       setUser(null); // ログアウト後にユーザー情報をクリア
-      window.location.href = '/'; // ホームへリダイレクト
+      navigate('/'); // ホームへリダイレクト
     } catch (err) {
       console.error('ログアウト失敗:', err.response?.data || err.message);
     }
@@ -114,19 +114,9 @@ const Lpsite = () => {
               >
                 messages
               </span>      
-              <span className="separator">|</span>
-              <span className="nav-link" onClick={handleLogout}>
-                logout
-              </span>
             </div>
           ) : (
             <div>
-              <span className="nav-link" 
-                    onClick={() => handleNavigation('messages')}
-              >
-                messages
-              <span className="separator">|</span>
-              </span>  
               <span className="nav-link" 
                     onClick={() => handleNavigation('login')}
               >

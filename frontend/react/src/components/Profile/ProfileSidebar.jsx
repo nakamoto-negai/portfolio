@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { getUser, updateUser } from '../../api/users';
 import './ProfileSidebar.css';
+import { useNavigate } from 'react-router-dom';
+import { logoutUser } from '../../api/auth';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function ProfileSidebar({ isOpen, onClose, userId, currentUser }) {
-  const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     name: '',
@@ -17,6 +19,8 @@ export default function ProfileSidebar({ isOpen, onClose, userId, currentUser })
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const navigate = useNavigate();
+  const { user, setUser } = useAuth();
 
   useEffect(() => {
     if (isOpen && userId) {
@@ -75,6 +79,16 @@ export default function ProfileSidebar({ isOpen, onClose, userId, currentUser })
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      setUser(null); 
+      navigate('/'); 
+    } catch (err) {
+      console.error('ログアウト失敗:', err.response?.data || err.message);
     }
   };
 
@@ -232,12 +246,18 @@ export default function ProfileSidebar({ isOpen, onClose, userId, currentUser })
                       ) : '未設定'}
                     </p>
                   </div>
-                  
-                  {currentUser && currentUser.id.toString() === userId.toString() && (
-                    <button className="edit-button" onClick={handleEditToggle}>
-                      編集する
-                    </button>
-                  )}
+                  <div>
+                    {currentUser && currentUser.id.toString() === userId.toString() && (
+                      <button className="edit-button" onClick={handleEditToggle}>
+                        編集する
+                      </button>
+                    )}
+                    {currentUser && currentUser.id.toString() === userId.toString() && (
+                      <button className="logout-button" onClick={handleLogout}>
+                        ログアウト
+                      </button>
+                    )}
+                  </div>
                 </>
               ) : (
                 <div className="edit-form">
