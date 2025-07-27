@@ -45,7 +45,7 @@ const PortfolioUpload = () => {
       alert('ポートフォリオが正常に作成されました！');
       setFormData({ title: '', description: '', is_public: false });
       setSelectedFiles([]);
-      navigate('/contact'); // ポートフォリオ一覧ページにリダイレクト
+      navigate('/portfolios'); // ポートフォリオ一覧ページにリダイレクト
     } catch (error) {
       console.error('Error uploading portfolio:', error);
       const errorMessage = error.response?.data?.message || 'アップロードに失敗しました。もう一度お試しください。';
@@ -165,7 +165,7 @@ const PortfolioUpload = () => {
             <button 
               type="button" 
               className="btn-cancel"
-              onClick={() => navigate('/contact')}
+              onClick={() => navigate('/portfolios')}
             >
               キャンセル
             </button>

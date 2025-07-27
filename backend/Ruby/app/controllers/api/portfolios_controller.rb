@@ -22,7 +22,7 @@ module Api
       end
       
       render json: @portfolios.as_json(
-        only: [:id, :title, :description, :is_public, :created_at, :updated_at],
+        only: [:id, :title, :description, :is_public, :created_at, :updated_at, :user_id],
         include: { user: { only: [:id, :name] } },
         methods: [
           :slides_count, 
@@ -32,7 +32,8 @@ module Api
           :likes_count,
           :has_main_image?,
           :main_image_url
-        ]
+        ],
+        include: { user: { only: [:id, :name] } }
       )
     end
 
