@@ -51,6 +51,35 @@ const PortfolioList = () => {
   if (loading) {
     return (
       <div className="portfolio-list-container">
+        {/* Independent Home Button */}
+        <button 
+          onClick={handleGoHome} 
+          className="home-button-fixed"
+          style={{
+            position: 'fixed',
+            top: '2rem',
+            left: '2rem',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '0.75rem 1.25rem',
+            background: 'rgba(181, 172, 152, 0.95)',
+            color: '#2a2a2a',
+            border: 'none',
+            borderRadius: '12px',
+            fontSize: '0.9rem',
+            fontWeight: '600',
+            cursor: 'pointer'
+          }}
+        >
+          <svg className="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9,22 9,12 15,12 15,22"></polyline>
+          </svg>
+          ホーム
+        </button>
+        
         <div className="loading-wrapper">
           <div className="loading-spinner"></div>
           <p className="loading-text">ポートフォリオを読み込み中...</p>
@@ -62,6 +91,35 @@ const PortfolioList = () => {
   if (error) {
     return (
       <div className="portfolio-list-container">
+        {/* Independent Home Button */}
+        <button 
+          onClick={handleGoHome} 
+          className="home-button-fixed"
+          style={{
+            position: 'fixed',
+            top: '2rem',
+            left: '2rem',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '0.75rem 1.25rem',
+            background: 'rgba(181, 172, 152, 0.95)',
+            color: '#2a2a2a',
+            border: 'none',
+            borderRadius: '12px',
+            fontSize: '0.9rem',
+            fontWeight: '600',
+            cursor: 'pointer'
+          }}
+        >
+          <svg className="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9,22 9,12 15,12 15,22"></polyline>
+          </svg>
+          ホーム
+        </button>
+        
         <div className="error-wrapper">
           <p className="error-text">エラー: {error}</p>
           <button onClick={fetchPortfolios} className="retry-button">
@@ -74,20 +132,40 @@ const PortfolioList = () => {
 
   return (
     <div className="portfolio-list-container">
+      {/* Independent Home Button */}
+      <button 
+        onClick={handleGoHome} 
+        className="home-button-fixed"
+        style={{
+          position: 'fixed',
+          top: '2rem',
+          left: '2rem',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          padding: '0.75rem 1.25rem',
+          background: 'rgba(181, 172, 152, 0.95)',
+          color: '#2a2a2a',
+          border: 'none',
+          borderRadius: '12px',
+          fontSize: '0.9rem',
+          fontWeight: '600',
+          cursor: 'pointer'
+        }}
+      >
+        <svg className="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9,22 9,12 15,12 15,22"></polyline>
+        </svg>
+        ホーム
+      </button>
+      
       <div className="list-wrapper">
         <header className="list-header">
-          <div className="header-left">
-            <button onClick={handleGoHome} className="home-button">
-              <svg className="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9,22 9,12 15,12 15,22"></polyline>
-              </svg>
-              ホーム
-            </button>
-            <div className="header-content">
-              <h1 className="list-title">公開ポートフォリオ一覧</h1>
-              <p className="list-subtitle">他のユーザーが公開している作品を閲覧できます</p>
-            </div>
+          <div className="header-content">
+            <h1 className="list-title">公開ポートフォリオ一覧</h1>
+            <p className="list-subtitle">他のユーザーが公開している作品を閲覧できます</p>
           </div>
           <button onClick={handleCreateNew} className="create-button">
             <svg className="create-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -111,7 +189,7 @@ const PortfolioList = () => {
                 まだ公開されているポートフォリオがありません。
               </p>
               <button onClick={handleCreateNew} className="empty-create-button">
-                新規作成
+                投稿する
               </button>
             </div>
           </div>
@@ -152,6 +230,9 @@ const PortfolioList = () => {
                 </div>
 
                 <div className="card-content">
+                  <div className="portfolio-author">
+                    <span className="author-name">作成者: {portfolio.user?.name || '不明'}</span>
+                  </div>
                   <h3 className="card-title">{portfolio.title}</h3>
                   <p className="card-description">
                     {truncateText(portfolio.description)}
@@ -218,6 +299,20 @@ const PortfolioList = () => {
                   >
                     詳細
                   </button>
+                  {portfolio.user && (
+                    <button 
+                      className="action-button message-button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/messages?partner_id=${portfolio.user.id}`);
+                      }}
+                    >
+                      <svg className="message-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                      </svg>
+                      メッセージ
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

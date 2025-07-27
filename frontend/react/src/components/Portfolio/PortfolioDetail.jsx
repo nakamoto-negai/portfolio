@@ -224,6 +224,18 @@ const PortfolioDetail = () => {
                   編集
                 </button>
               )}
+              
+              {!isOwner && portfolio.user && (
+                <button 
+                  onClick={() => navigate(`/messages?partner_id=${portfolio.user.id}`)}
+                  className="action-btn message-btn"
+                >
+                  <svg className="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  メッセージを送る
+                </button>
+              )}
             </div>
           </div>
         </div>

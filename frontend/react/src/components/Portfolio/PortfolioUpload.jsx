@@ -165,7 +165,7 @@ const PortfolioUpload = () => {
             <button 
               type="button" 
               className="btn-cancel"
-              onClick={() => navigate('/portfolios')}
+              onClick={() => navigate('/')}
             >
               キャンセル
             </button>

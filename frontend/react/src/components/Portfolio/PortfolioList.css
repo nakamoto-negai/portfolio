@@ -31,9 +31,9 @@
 }
 
 .list-wrapper {
-  max-width: 1200px;
+  max-width: 1400px; /* より広くする */
   margin: 0 auto;
-  padding: 2rem;
+  padding: 6rem 2rem 2rem; /* 上部パディングを増やしてホームボタンの分確保 */
   position: relative;
   z-index: 2;
 }
@@ -43,14 +43,6 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 3rem;
-  padding-top: 2rem;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  flex: 1;
 }
 
 .header-content {
@@ -97,6 +89,42 @@
 .create-icon {
   width: 18px;
   height: 18px;
+}
+
+.home-button-fixed {
+  position: fixed !important;
+  top: 2rem !important;
+  left: 2rem !important;
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(181, 172, 152, 0.95) !important;
+  color: #2a2a2a !important;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  z-index: 1000 !important;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  min-width: fit-content;
+  white-space: nowrap;
+}
+
+.home-button-fixed:hover {
+  background: rgba(181, 172, 152, 1) !important;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(181, 172, 152, 0.4);
+}
+
+/* デバッグ用 - 一時的に目立つ色にする */
+.home-button-fixed {
+  /* background: red !important; */
+  /* color: white !important; */
 }
 
 .home-button {
@@ -228,8 +256,8 @@
 /* Portfolio Grid */
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
   margin-top: 2rem;
 }
 
@@ -484,21 +512,35 @@
 }
 
 /* レスポンシブデザイン */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .list-wrapper {
-    padding: 1rem;
+    max-width: 1400px;
+    padding: 5rem 1.5rem 2rem;
+  }
+
+  .portfolio-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-button-fixed {
+    top: 1rem;
+    left: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .list-wrapper {
+    padding: 5rem 1rem 1rem; /* モバイルでは上部パディングを調整 */
   }
 
   .list-header {
     flex-direction: column;
     gap: 1rem;
     align-items: stretch;
-  }
-
-  .header-left {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
+    margin-bottom: 2rem;
   }
 
   .list-title {

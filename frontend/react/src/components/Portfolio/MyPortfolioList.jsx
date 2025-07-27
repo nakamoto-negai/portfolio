@@ -88,20 +88,20 @@ const MyPortfolioList = () => {
 
   return (
     <div className="portfolio-list-container">
+      {/* Independent Home Button */}
+      <button onClick={handleGoHome} className="home-button-fixed">
+        <svg className="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9,22 9,12 15,12 15,22"></polyline>
+        </svg>
+        ホーム
+      </button>
+      
       <div className="list-wrapper">
         <header className="list-header">
-          <div className="header-left">
-            <button onClick={handleGoHome} className="home-button">
-              <svg className="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9,22 9,12 15,12 15,22"></polyline>
-              </svg>
-              ホーム
-            </button>
-            <div className="header-content">
-              <h1 className="list-title">マイポートフォリオ</h1>
-              <p className="list-subtitle">あなたの作品を一覧で確認・管理できます</p>
-            </div>
+          <div className="header-content">
+            <h1 className="list-title">マイポートフォリオ</h1>
+            <p className="list-subtitle">あなたの作品を一覧で確認・管理できます</p>
           </div>
           <button onClick={handleCreateNew} className="create-button">
             <svg className="create-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -125,7 +125,7 @@ const MyPortfolioList = () => {
                 最初のポートフォリオを作成してみましょう！
               </p>
               <button onClick={handleCreateNew} className="empty-create-button">
-                新規作成
+                投稿する
               </button>
             </div>
           </div>

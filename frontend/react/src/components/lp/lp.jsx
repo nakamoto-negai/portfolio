@@ -9,7 +9,7 @@ import ProfileSidebar from '../Profile/ProfileSidebar';
 const Lpsite = () => {
   const { user, setUser } = useAuth();
   const [isProfileSidebarOpen, setIsProfileSidebarOpen] = useState(false);
-  const [users, setUsers] = useState([]);
+  const [ setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   
@@ -177,18 +177,7 @@ const Lpsite = () => {
             >
               繋がる
             </span>
-          </div>
-          <h1>ようこそ {user?.name} さん</h1>
-          <h2>チャット可能なユーザー一覧</h2>
-          <ul>
-            {users.map((u) => (
-              <li key={u.id}>
-                <button onClick={() => navigate(`/messages?partner_id=${u.id}`)}>
-                  {u.name}
-                </button>
-              </li>
-            ))}
-          </ul>
+          </div>      
         </div>
       </main>
     </div>
