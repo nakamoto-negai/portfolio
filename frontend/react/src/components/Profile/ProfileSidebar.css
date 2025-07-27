@@ -10,6 +10,14 @@
   animation: fadeIn 0.3s ease-out forwards;
 }
 
+/* メールアドレス専用スタイル */
+.email-readonly {
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: #888888 !important;
+  cursor: not-allowed !important;
+  border-color: #333333 !important;
+}
+
 @keyframes fadeIn {
   to {
     opacity: 1;
