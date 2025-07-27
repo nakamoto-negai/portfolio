@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getPublishedPortfolios } from '../../api/portfolios';
+import { getMyPortfolios, deletePortfolio } from '../../api/portfolios';
 import './PortfolioList.css';
 
-const PortfolioList = () => {
+const MyPortfolioList = () => {
   const [portfolios, setPortfolios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,7 +16,7 @@ const PortfolioList = () => {
   const fetchPortfolios = async () => {
     try {
       setLoading(true);
-      const response = await getPublishedPortfolios();
+      const response = await getMyPortfolios();
       setPortfolios(response.data);
     } catch (error) {
       console.error('Error fetching portfolios:', error);
@@ -32,6 +32,20 @@ const PortfolioList = () => {
 
   const handleCreateNew = () => {
     navigate('/gallery');
+  };
+
+  const handleDelete = async (portfolioId, portfolioTitle) => {
+    if (window.confirm(`「${portfolioTitle}」を削除しますか？この操作は取り消せません。`)) {
+      try {
+        await deletePortfolio(portfolioId);
+        alert('ポートフォリオが削除されました。');
+        // 一覧を再取得
+        fetchPortfolios();
+      } catch (error) {
+        console.error('Error deleting portfolio:', error);
+        alert('削除に失敗しました。もう一度お試しください。');
+      }
+    }
   };
 
   const handleGoHome = () => {
@@ -85,8 +99,8 @@ const PortfolioList = () => {
               ホーム
             </button>
             <div className="header-content">
-              <h1 className="list-title">公開ポートフォリオ一覧</h1>
-              <p className="list-subtitle">他のユーザーが公開している作品を閲覧できます</p>
+              <h1 className="list-title">マイポートフォリオ</h1>
+              <p className="list-subtitle">あなたの作品を一覧で確認・管理できます</p>
             </div>
           </div>
           <button onClick={handleCreateNew} className="create-button">
@@ -106,9 +120,9 @@ const PortfolioList = () => {
                 <circle cx="8.5" cy="8.5" r="1.5"></circle>
                 <polyline points="21,15 16,10 5,21"></polyline>
               </svg>
-              <h3 className="empty-title">公開ポートフォリオがありません</h3>
+              <h3 className="empty-title">ポートフォリオがありません</h3>
               <p className="empty-description">
-                まだ公開されているポートフォリオがありません。
+                最初のポートフォリオを作成してみましょう！
               </p>
               <button onClick={handleCreateNew} className="empty-create-button">
                 新規作成
@@ -218,6 +232,15 @@ const PortfolioList = () => {
                   >
                     詳細
                   </button>
+                  <button 
+                    className="action-button delete-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(portfolio.id, portfolio.title);
+                    }}
+                  >
+                    削除
+                  </button>
                 </div>
               </div>
             ))}
@@ -228,4 +251,4 @@ const PortfolioList = () => {
   );
 };
 
-export default PortfolioList;
+export default MyPortfolioList;

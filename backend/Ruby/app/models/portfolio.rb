@@ -93,7 +93,11 @@ class Portfolio < ApplicationRecord
   
   def main_image_url
     return nil unless has_main_image?
-    Rails.application.routes.url_helpers.rails_blob_path(main_image, only_path: true)
+    
+    # 開発環境のデフォルトホスト設定
+    host = Rails.env.development? ? 'localhost:3000' : 'production-host.com'
+    
+    Rails.application.routes.url_helpers.rails_blob_url(main_image, host: host)
   end
   
   def extract_main_image_from_powerpoint!

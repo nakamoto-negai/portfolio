@@ -32,3 +32,7 @@ export const updatePortfolio = (id, portfolioData) =>
 // ポートフォリオ削除
 export const deletePortfolio = (id) =>
   apiClient.delete(`/portfolios/${id}`);
+
+// ポートフォリオのスライド一覧取得
+export const getPortfolioSlides = (portfolioId) =>
+  apiClient.get(`/portfolios/${portfolioId}/slides`);
