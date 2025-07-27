@@ -89,7 +89,7 @@ const PortfolioUpload = () => {
       alert('ポートフォリオが正常に作成されました！');
       setFormData({ title: '', description: '', is_public: false });
       setSelectedFiles([]);
-      navigate('/portfolios'); // ポートフォリオ一覧ページにリダイレクト
+      navigate('/my-portfolios'); // ポートフォリオ一覧ページにリダイレクト
     } catch (error) {
       console.error('Error uploading portfolio:', error);
       const errorMessage = error.response?.data?.message || 'アップロードに失敗しました。もう一度お試しください。';
