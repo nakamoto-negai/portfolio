@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { createPortfolio } from '../../api/portfolios';
 import { useAuth } from '../../hooks/useAuth';
 import './SlideEditor.css';
@@ -66,6 +67,7 @@ const SlideEditor = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
+  const navigate = useNavigate();
 
   const fileInputRef = useRef(null);
 
@@ -656,7 +658,7 @@ const SlideEditor = () => {
   };
 
   // PowerPoint形式でエクスポート
-  const exportToPowerPoint = async () => {
+  const exportToPowerPoint = async (downloadFile = true) => {
     if (isExporting) return; // 重複実行を防止
     
     setIsExporting(true);
@@ -906,11 +908,20 @@ const SlideEditor = () => {
       
       console.log('PowerPointファイルを生成中...');
       
-      // PowerPointファイルを保存
-      await pptx.writeFile({ fileName: fileName });
-      
-      console.log('PowerPointファイルのエクスポートが完了しました:', fileName);
-      alert(`PowerPointファイル「${fileName}」のダウンロードが開始されました。`);
+      if (downloadFile) {
+        // PowerPointファイルを保存（ダウンロード）
+        await pptx.writeFile({ fileName: fileName });
+        console.log('PowerPointファイルのエクスポートが完了しました:', fileName);
+        alert(`PowerPointファイル「${fileName}」のダウンロードが開始されました。`);
+      } else {
+        // Blobとして返す（投稿用）
+        const blob = await pptx.write('blob');
+        const file = new File([blob], fileName, {
+          type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+        });
+        console.log('PowerPointファイルの生成が完了しました:', fileName);
+        return file;
+      }
       
     } catch (error) {
       console.error('PowerPointエクスポートエラー:', error);
@@ -938,6 +949,42 @@ const SlideEditor = () => {
       alert(errorMessage);
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  // 投稿ボタンのハンドラー（PowerPoint生成 → gallery遷移）
+  const handlePublish = async () => {
+    if (isPublishing) return;
+    
+    setIsPublishing(true);
+    try {
+      console.log('投稿用PowerPoint生成開始...');
+      
+      // PowerPointファイルを生成（ダウンロードしない）
+      const file = await exportToPowerPoint(false);
+      
+      if (file) {
+        // 生成されたファイルをセッションストレージに保存
+        // Fileオブジェクトは直接保存できないので、ArrayBufferに変換
+        const arrayBuffer = await file.arrayBuffer();
+        const fileData = {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          arrayBuffer: Array.from(new Uint8Array(arrayBuffer)), // 配列に変換
+          timestamp: Date.now()
+        };
+        
+        sessionStorage.setItem('generatedPptxFile', JSON.stringify(fileData));
+        
+        console.log('PowerPointファイル生成完了、galleryページに遷移...');
+        navigate('/gallery', { state: { fromSlideEditor: true } });
+      }
+    } catch (error) {
+      console.error('投稿用PowerPoint生成エラー:', error);
+      alert('PowerPointファイルの生成に失敗しました。');
+    } finally {
+      setIsPublishing(false);
     }
   };
 
@@ -1894,9 +1941,10 @@ const SlideEditor = () => {
             </button>
             <button 
               className="publish-btn"
-              onClick={() => window.location.href = '/gallery'}
+              onClick={handlePublish}
+              disabled={isPublishing}
             >
-              📤 投稿
+              {isPublishing ? '📤 生成中...' : '📤 投稿'}
             </button>
           </div>
           
