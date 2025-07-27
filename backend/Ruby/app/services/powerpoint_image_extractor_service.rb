@@ -63,39 +63,66 @@ class PowerpointImageExtractorService
       temp_pptx_path = File.join(output_dir, "presentation.pptx")
       FileUtils.cp(pptx_file.path, temp_pptx_path)
       
-      # LibreOfficeコマンドを実行（複数スライド対応）
-      # まず各スライドごとのPNG変換を試行
+      # LibreOfficeを使って複数スライドを個別のPNGファイルに変換
+      # PowerPointを読み取り専用で開き、各スライドを個別に出力
       cmd = [
         'libreoffice',
         '--headless',
         '--invisible',
-        '--convert-to', 'png',
+        '--nologo',
+        '--norestore',
+        '--convert-to', 'pdf',
         '--outdir', output_dir.to_s,
         temp_pptx_path
       ]
       
-      Rails.logger.info "First attempt: Converting entire presentation"
+      Rails.logger.info "Step 1: Converting PowerPoint to PDF"
       stdout1, stderr1, status1 = Open3.capture3(*cmd)
-      Rails.logger.info "First conversion - stdout: #{stdout1}"
-      Rails.logger.info "First conversion - stderr: #{stderr1}"
-      Rails.logger.info "First conversion - status: #{status1.exitstatus}"
+      Rails.logger.info "PDF conversion - stdout: #{stdout1}"
+      Rails.logger.info "PDF conversion - stderr: #{stderr1}"
+      Rails.logger.info "PDF conversion - status: #{status1.exitstatus}"
       
-      # 個別スライド変換も試行（libreofficeの--export-as オプション使用）
-      export_cmd = [
-        'libreoffice',
-        '--headless',
-        '--invisible',
-        '--export-as', 'png',
-        '--export-slides', 'all',
-        '--outdir', output_dir.to_s,
-        temp_pptx_path
-      ]
+      # PDFが作成されたかチェック
+      pdf_files = Dir.glob("#{output_dir}/*.pdf")
+      Rails.logger.info "PDF files found: #{pdf_files}"
       
-      Rails.logger.info "Second attempt: Exporting all slides individually"
-      stdout2, stderr2, status2 = Open3.capture3(*export_cmd)
-      Rails.logger.info "Second conversion - stdout: #{stdout2}"
-      Rails.logger.info "Second conversion - stderr: #{stderr2}" 
-      Rails.logger.info "Second conversion - status: #{status2.exitstatus}"
+      if pdf_files.any?
+        pdf_file = pdf_files.first
+        Rails.logger.info "Converting PDF to individual PNG slides: #{pdf_file}"
+        
+        # ImageMagickでPDFを個別のPNGページに変換
+        convert_cmd = [
+          'convert',
+          '-density', '150',
+          '-quality', '90',
+          pdf_file,
+          File.join(output_dir, 'slide_%02d.png')
+        ]
+        
+        Rails.logger.info "Step 2: Converting PDF pages to PNG images"
+        stdout2, stderr2, status2 = Open3.capture3(*convert_cmd)
+        Rails.logger.info "ImageMagick conversion - stdout: #{stdout2}"
+        Rails.logger.info "ImageMagick conversion - stderr: #{stderr2}"
+        Rails.logger.info "ImageMagick conversion - status: #{status2.exitstatus}"
+      else
+        Rails.logger.error "No PDF file was created, falling back to direct PNG conversion"
+        
+        # フォールバック: 直接PNG変換
+        fallback_cmd = [
+          'libreoffice',
+          '--headless',
+          '--invisible',
+          '--convert-to', 'png',
+          '--outdir', output_dir.to_s,
+          temp_pptx_path
+        ]
+        
+        Rails.logger.info "Fallback: Direct PNG conversion"
+        stdout3, stderr3, status3 = Open3.capture3(*fallback_cmd)
+        Rails.logger.info "Fallback conversion - stdout: #{stdout3}"
+        Rails.logger.info "Fallback conversion - stderr: #{stderr3}"
+        Rails.logger.info "Fallback conversion - status: #{status3.exitstatus}"
+      end
 
       # 変換されたファイルを詳しく調査
       all_files = Dir.entries(output_dir).reject { |f| f.start_with?('.') }
@@ -119,13 +146,18 @@ class PowerpointImageExtractorService
         
         Rails.logger.info "Comparing: #{a_name} vs #{b_name}"
         
-        # presentation.png (メインファイル) を最初に
-        if a_name == "presentation"
+        # slide_XX.png の形式での並び替え（ImageMagick出力）
+        if a_name.match(/^slide_(\d+)$/) && b_name.match(/^slide_(\d+)$/)
+          a_num = a_name.match(/^slide_(\d+)$/)[1].to_i
+          b_num = b_name.match(/^slide_(\d+)$/)[1].to_i
+          a_num <=> b_num
+        # presentation.png (単一ファイル) の場合
+        elsif a_name == "presentation"
           -1
         elsif b_name == "presentation"
           1
+        # presentation-1, presentation-2 などの番号でソート（LibreOffice出力）
         else
-          # presentation-1, presentation-2 などの番号でソート
           a_parts = a_name.split('-')
           b_parts = b_name.split('-')
           

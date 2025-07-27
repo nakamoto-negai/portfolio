@@ -1,10 +1,31 @@
 .conversation-item {
   cursor: pointer;
-  padding: 0.5rem 0 0.5rem 1rem; /* py-2 pl-4 */
+  padding: 0.75rem 1rem;
   transition: background-color 0.2s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .conversation-item:hover,
 .conversation-item--active {
   background-color: #2b2d33;
+}
+
+.conversation-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.conversation-name {
+  font-weight: 500;
+  color: #ffffff;
+  flex: 1;
+}
+
+.conversation-time {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
 }

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getPortfolio } from '../../api/portfolios';
+import { useAuth } from '../../hooks/useAuth';
 import './PortfolioDetail.css';
 
 const PortfolioDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [portfolio, setPortfolio] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -64,6 +66,9 @@ const PortfolioDetail = () => {
     );
   }
 
+  // Check if current user owns this portfolio
+  const isOwner = user && portfolio.user && user.id === portfolio.user.id;
+
   return (
     <div className="portfolio-detail-container">
       <div className="detail-wrapper">
@@ -77,12 +82,14 @@ const PortfolioDetail = () => {
           </button>
           
           <div className="header-actions">
-            <button 
-              onClick={() => navigate(`/portfolio/${portfolio.id}/edit`)}
-              className="edit-button"
-            >
-              編集
-            </button>
+            {isOwner && (
+              <button 
+                onClick={() => navigate(`/portfolio/${portfolio.id}/edit`)}
+                className="edit-button"
+              >
+                編集
+              </button>
+            )}
             {portfolio.is_public && (
               <span className="public-badge">
                 <svg className="public-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -205,16 +212,18 @@ const PortfolioDetail = () => {
                 </button>
               )}
               
-              <button 
-                onClick={() => navigate(`/portfolio/${portfolio.id}/edit`)}
-                className="action-btn edit-btn"
-              >
-                <svg className="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                </svg>
-                編集
-              </button>
+              {isOwner && (
+                <button 
+                  onClick={() => navigate(`/portfolio/${portfolio.id}/edit`)}
+                  className="action-btn edit-btn"
+                >
+                  <svg className="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                  編集
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getPortfolio, getPortfolioSlides } from '../../api/portfolios';
 import './SlideShow.css';
@@ -20,6 +20,7 @@ const normalizeImageUrl = (url) => {
 const SlideShow = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const containerRef = useRef(null);
   const [portfolio, setPortfolio] = useState(null);
   const [slides, setSlides] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -31,22 +32,58 @@ const SlideShow = () => {
     fetchData();
   }, [id]);
 
+  // コンテナにフォーカスを当てるためのeffect
+  useEffect(() => {
+    if (containerRef.current && !loading && !error) {
+      containerRef.current.focus();
+    }
+  }, [loading, error]);
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  }, [slides.length]);
+
+  const previousSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  }, [slides.length]);
+
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  }, []);
+
+  const exitFullscreen = useCallback(() => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  }, []);
+
   useEffect(() => {
     const handleKeyPress = (e) => {
       switch (e.key) {
         case 'ArrowLeft':
+          e.preventDefault();
           previousSlide();
           break;
         case 'ArrowRight':
+          e.preventDefault();
           nextSlide();
           break;
         case 'Escape':
+          e.preventDefault();
           if (isFullscreen) {
             exitFullscreen();
           }
           break;
         case 'f':
         case 'F':
+          e.preventDefault();
           toggleFullscreen();
           break;
       }
@@ -54,7 +91,7 @@ const SlideShow = () => {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentSlide, isFullscreen]);
+  }, [nextSlide, previousSlide, isFullscreen, toggleFullscreen, exitFullscreen]);
 
   const fetchData = async () => {
     try {
@@ -77,33 +114,8 @@ const SlideShow = () => {
     }
   };
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-  };
-
-  const previousSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  };
-
   const goToSlide = (index) => {
     setCurrentSlide(index);
-  };
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
-  };
-
-  const exitFullscreen = () => {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
   };
 
   if (loading) {
@@ -146,7 +158,13 @@ const SlideShow = () => {
   const currentSlideData = slides[currentSlide];
 
   return (
-    <div className={`slideshow-container ${isFullscreen ? 'fullscreen' : ''}`}>
+    <div 
+      ref={containerRef}
+      tabIndex={0}
+      className={`slideshow-container ${isFullscreen ? 'fullscreen' : ''}`}
+      style={{ outline: 'none' }}
+      onClick={() => containerRef.current?.focus()}
+    >
       {/* Header */}
       <header className="slideshow-header">
         <div className="header-left">
@@ -267,7 +285,7 @@ const SlideShow = () => {
 
       {/* Keyboard Shortcuts Help */}
       <div className="shortcuts-help">
-        <p>キーボードショートカット: ← → (ナビゲーション) | F (フルスクリーン) | ESC (終了)</p>
+        <p>キーボードショートカット: ← → (ナビゲーション) | F (フルスクリーン) | ESC (終了) | 画面をクリックでフォーカス</p>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import MessageBubble from "./MessageBubble";
 import MessageInput from "./MessageInput";
 import "./ChatWindow.css";
 
-const ChatWindow = ({ myId, partner }) => {
+const ChatWindow = ({ myId, partner, onMessageSent }) => {
   // partner がまだ null（URL直アクセス直後など）の場合は空表示
   if (!partner?.id) return <p className="chat-window">Loading…</p>;
 
@@ -46,7 +46,7 @@ const ChatWindow = ({ myId, partner }) => {
 
       {/* ───── 入力欄 ───── */}
       <div className="chat-input-area">
-        <MessageInput partnerId={partner.id} />
+        <MessageInput partnerId={partner.id} onMessageSent={onMessageSent} />
       </div>
     </section>
   );

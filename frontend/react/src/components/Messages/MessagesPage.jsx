@@ -9,6 +9,7 @@ import { fetchUserById } from "../../api/users";
 const MessagesPage = () => {
   const { user, loading } = useAuth();
   const [partner, setPartner] = useState(null);
+  const [refreshSidebar, setRefreshSidebar] = useState(0);
   const [searchParams] = useSearchParams();
   const partnerId = searchParams.get("partner_id");
 
@@ -20,15 +21,28 @@ const MessagesPage = () => {
         .catch(() => setPartner(null));
     }
   }, [partnerId]);
+
+  // メッセージ送信後にサイドバーをリフレッシュする関数
+  const handleMessageSent = () => {
+    setRefreshSidebar(prev => prev + 1);
+  };
   
   if (!user) return <p className="login-warning">ログインしてください</p>;
 
   return (
     <div className="messages-page">
-      <Sidebar activeId={partner?.id ?? null} onSelect={setPartner} />
+      <Sidebar 
+        activeId={partner?.id ?? null} 
+        onSelect={setPartner} 
+        refreshTrigger={refreshSidebar}
+      />
       <div className="chat-area">
         {partner ? (
-          <ChatWindow myId={user.id} partner={partner} />
+          <ChatWindow 
+            myId={user.id} 
+            partner={partner} 
+            onMessageSent={handleMessageSent}
+          />
         ) : (
           <p className="chat-placeholder">左のリストから会話を選択してください</p>
         )}

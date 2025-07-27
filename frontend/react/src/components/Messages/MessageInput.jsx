@@ -2,7 +2,7 @@ import { useState } from "react";
 import { postMessage } from "../../api/messages";
 import "./MessageInput.css";
 
-const MessageInput = ({ partnerId }) => {
+const MessageInput = ({ partnerId, onMessageSent }) => {
   const [text, setText] = useState("");
 
   const submit = async (e) => {
@@ -10,6 +10,10 @@ const MessageInput = ({ partnerId }) => {
     if (!text.trim()) return;
     await postMessage(partnerId, text.trim());
     setText("");
+    // メッセージ送信後のコールバックを呼ぶ
+    if (onMessageSent) {
+      onMessageSent();
+    }
   };
 
   return (
