@@ -103,6 +103,11 @@ export default function ProfileSidebar({ isOpen, onClose, userId, currentUser })
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    // メールアドレスの変更は許可しない
+    if (name === 'email') {
+      console.log('メールアドレスの編集は無効です');
+      return;
+    }
     setProfileData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -278,6 +283,8 @@ export default function ProfileSidebar({ isOpen, onClose, userId, currentUser })
                       name="email"
                       value={profileData.email}
                       onChange={handleChange}
+                      readOnly
+                      className="email-readonly"
                     />
                   </div>
                   
