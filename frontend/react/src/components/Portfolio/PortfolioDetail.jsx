@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getPortfolio } from '../../api/portfolios';
 import { useAuth } from '../../hooks/useAuth';
+import LikeButton from './LikeButton';
 import './PortfolioDetail.css';
 
 const PortfolioDetail = () => {
@@ -170,15 +171,14 @@ const PortfolioDetail = () => {
                 </div>
               </div>
 
-              <div className="stat-card">
-                <div className="stat-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                  </svg>
-                </div>
-                <div className="stat-content">
-                  <span className="stat-value">{portfolio.likes_count || 0}</span>
-                  <span className="stat-label">いいね</span>
+              <div className="stat-card like-stat-card">
+                <div className="like-section">
+                  <LikeButton 
+                    portfolioId={portfolio.id}
+                    initialLiked={portfolio.liked_by_current_user || false}
+                    initialCount={portfolio.likes_count || 0}
+                    size="large"
+                  />
                 </div>
               </div>
             </div>

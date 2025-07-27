@@ -3,6 +3,7 @@ class Portfolio < ApplicationRecord
   belongs_to :user, optional: true
   has_many :slides, dependent: :destroy
   has_many :powerpoints, dependent: :destroy
+  has_many :likes, dependent: :destroy
   
   # Active Storage for main image
   has_one_attached :main_image
@@ -111,7 +112,12 @@ class Portfolio < ApplicationRecord
 
   # その他の公開メソッド
   def likes_count
-    0  # 固定値を返す
+    likes.count
+  end
+  
+  def liked_by?(user)
+    return false unless user
+    likes.exists?(user: user)
   end
   
   def toggle_publication!

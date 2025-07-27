@@ -38,6 +38,12 @@ Rails.application.routes.draw do
           put :reorder
         end
       end
+      # いいね機能
+      resource :likes, only: [:create, :destroy] do
+        collection do
+          get :status
+        end
+      end
     end
 
     # API v1 namespace for legacy support
