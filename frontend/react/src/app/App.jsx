@@ -7,6 +7,9 @@ import { AuthProvider, useAuth } from '../hooks/useAuth';
 import SlideEditor from '../components/SlideEditor/SlideEditor.jsx';
 import ProfilePage from '../components/Profile/ProfilePage.jsx';
 import ProfileEdit from '../components/Profile/ProfileEdit.jsx';
+import PortfolioList from '../components/Portfolio/PortfolioList.jsx';
+import PortfolioCreate from '../components/Portfolio/PortfolioCreate.jsx';
+import PowerPointUpload from '../components/PowerPoint/PowerPointUpload.jsx';
 
 const AppRoutes = () => {
   return (
@@ -24,6 +27,9 @@ const AppRoutes = () => {
         <Route path="/users/:userId" element={<ProfilePage />} />
         <Route path="/users/:userId/edit" element={<ProfileEdit />} />
         <Route path="/messages" element={<MessagesPage />} />
+        <Route path="/portfolios" element={<PortfolioList />} />
+        <Route path="/portfolios/new" element={<PortfolioCreate />} />
+        <Route path="/portfolios/:portfolioId/powerpoints/upload" element={<PowerPointUpload />} />
       </Routes>
     </div>
   )

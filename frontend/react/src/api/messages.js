@@ -4,12 +4,12 @@ import apiClient from './apiClient';
 // ユーザー一覧API
 export const fetchConversations = () =>
    // ユーザー一覧 or 会話相手一覧
-  apiClient.get('/conversations');
+  apiClient.get('/api/conversations');
 
 // メッセージ一覧API
 export const fetchMessages = (partnerId) =>
-  apiClient.get(`/conversations/${partnerId}/messages`).then((res) => res.data);
+  apiClient.get(`/api/conversations/${partnerId}/messages`).then((res) => res.data);
 
 // メッセージ送信API
 export const postMessage = (partnerId, content) =>
-  apiClient.post(`/conversations/${partnerId}/messages`, { content });
+  apiClient.post(`/api/conversations/${partnerId}/messages`, { content });

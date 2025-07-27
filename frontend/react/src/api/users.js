@@ -1,15 +1,15 @@
 import apiClient from './apiClient';
 
-export const fetchUsers = () => apiClient.get('/users');
+export const fetchUsers = () => apiClient.get('/api/users');
 
-export const fetchUserById = (id) => apiClient.get(`/users/${id}`);
+export const fetchUserById = (id) => apiClient.get(`/api/users/${id}`);
 
 // ユーザー情報を取得
 export const getUser = (userId) => {
-  return apiClient.get(`/users/${userId}`, { withCredentials: true });
+  return apiClient.get(`/api/users/${userId}`, { withCredentials: true });
 };
 
 // ユーザー情報を更新
 export const updateUser = (userId, userData) => {
-  return apiClient.put(`/users/${userId}`, { user: userData }, { withCredentials: true });
+  return apiClient.put(`/api/users/${userId}`, { user: userData }, { withCredentials: true });
 };
