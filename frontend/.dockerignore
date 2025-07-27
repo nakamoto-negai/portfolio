@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ビルド成果物
+dist/
+build/
+
+# ローカル設定
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# エディタ設定
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+
+# テストファイル
+coverage/
+.nyc_output/
+
+# ログファイル
+*.log
+
+# ドキュメント
+README.md
+*.md
+doc/
+
+# キャッシュ
+.cache/
+.parcel-cache/
