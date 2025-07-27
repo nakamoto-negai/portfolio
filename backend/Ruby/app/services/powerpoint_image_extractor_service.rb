@@ -55,9 +55,18 @@ class PowerpointImageExtractorService
   def extract_all_slide_images
     return false unless @powerpoint.file.attached?
 
+    # LibreOfficeが利用可能かチェック
+    unless system('which libreoffice > /dev/null 2>&1')
+      Rails.logger.error "LibreOffice is not installed or not available in PATH"
+      return false
+    end
+
     @powerpoint.file.open do |pptx_file|
         output_dir = Rails.root.join('tmp', "pptx_images_#{SecureRandom.hex(4)}")
         FileUtils.mkdir_p(output_dir)
+        
+        Rails.logger.info "Converting PPTX to PNG: #{pptx_file.path}"
+        
         cmd = [
         'libreoffice',
         '--headless',
@@ -66,36 +75,47 @@ class PowerpointImageExtractorService
         pptx_file.path
         ]
         stdout, stderr, status = Open3.capture3(*cmd)
+        Rails.logger.info "LibreOffice command: #{cmd.join(' ')}"
         Rails.logger.info "LibreOffice stdout: #{stdout}"
         Rails.logger.info "LibreOffice stderr: #{stderr}"
+        Rails.logger.info "LibreOffice status: #{status.exitstatus}"
+
+        # 少し待ってからファイルをチェック
+        sleep(2)
 
         # 変換された全ての画像ファイルを取得
         images = Dir.glob("#{output_dir}/*.png").sort
+        Rails.logger.info "Found #{images.length} PNG files in #{output_dir}"
+        
         if images.any?
-        images.each_with_index do |image_path, idx|
-          Rails.logger.info "Extracted slide image: #{image_path}"
-          File.open(image_path, 'rb') do |img|
-            slide = @portfolio.slides.create!(page_number: idx + 1)
-            slide.image.attach(
-              io: img,
-              filename: File.basename(image_path),
-              content_type: 'image/png'
-            )
-            unless slide.save
-              Rails.logger.error "Slide save failed: #{slide.errors.full_messages.join(', ')}"
+          images.each_with_index do |image_path, idx|
+            Rails.logger.info "Processing slide image: #{image_path}"
+            File.open(image_path, 'rb') do |img|
+              slide = @portfolio.slides.create!(page_number: idx + 1)
+              slide.image.attach(
+                io: img,
+                filename: File.basename(image_path),
+                content_type: 'image/png'
+              )
+              if slide.save
+                Rails.logger.info "Successfully saved slide #{idx + 1}"
+              else
+                Rails.logger.error "Slide save failed: #{slide.errors.full_messages.join(', ')}"
+              end
             end
           end
-        end
-        FileUtils.rm_rf(output_dir)
-        return true
+          FileUtils.rm_rf(output_dir)
+          return true
         else
-        Rails.logger.error "No slide images found in #{output_dir}"
-        FileUtils.rm_rf(output_dir)
-        return false
+          Rails.logger.error "No slide images found in #{output_dir} after conversion"
+          Rails.logger.error "Directory contents: #{Dir.glob("#{output_dir}/*")}"
+          FileUtils.rm_rf(output_dir)
+          return false
         end
     end
     rescue => e
     Rails.logger.error "Error extracting slide images: #{e.message}"
+    Rails.logger.error "Backtrace: #{e.backtrace.join("\n")}"
     false
   end
 end

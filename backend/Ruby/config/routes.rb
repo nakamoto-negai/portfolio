@@ -17,6 +17,12 @@ Rails.application.routes.draw do
 
     # Portfolio API routes with enhanced features
     resources :portfolios, only: [:index, :show, :create, :update, :destroy] do
+      member do
+        # POST /api/portfolios/:id/like
+        # いいねを追加/削除
+        post :like
+        delete :unlike
+      end
       collection do
         # GET /api/portfolios/published
         # 公開設定のポートフォリオの一覧を取得

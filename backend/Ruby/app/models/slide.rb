@@ -32,6 +32,16 @@ class Slide < ApplicationRecord
   def last_slide?
     page_number == portfolio.slides.maximum(:page_number)
   end
+
+  def image_url
+    begin
+      return nil unless image.attached?
+      Rails.application.routes.url_helpers.rails_blob_path(image, only_path: true)
+    rescue => e
+      Rails.logger.error "Error getting slide image URL: #{e.message}"
+      return nil
+    end
+  end
   
    # スライドショー関連のヘルパーメソッド
   def slideshow_url

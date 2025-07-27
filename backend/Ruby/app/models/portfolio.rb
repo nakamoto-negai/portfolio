@@ -3,6 +3,7 @@ class Portfolio < ApplicationRecord
   belongs_to :user, optional: true
   has_many :slides, dependent: :destroy
   has_many :powerpoints, dependent: :destroy
+  has_many :likes, dependent: :destroy
   
   # Active Storage for main image
   has_one_attached :main_image
@@ -75,7 +76,12 @@ class Portfolio < ApplicationRecord
 
   # スライド関連の公開メソッド
   def slides_count
-    slides.count
+    begin
+      slides.count
+    rescue => e
+      Rails.logger.error "Error getting slides count: #{e.message}"
+      return 0
+    end
   end
   
   def ordered_slides
@@ -86,14 +92,29 @@ class Portfolio < ApplicationRecord
     slides.where.not(page_number: nil).order(:page_number).first
   end
 
+  def thumbnail_image_url
+    begin
+      slide = thumbnail_slide
+      return slide&.image_url
+    rescue => e
+      Rails.logger.error "Error getting thumbnail image URL: #{e.message}"
+      return nil
+    end
+  end
+
   # メイン画像関連のメソッド
   def has_main_image?
     main_image.attached?
   end
   
   def main_image_url
-    return nil unless has_main_image?
-    Rails.application.routes.url_helpers.rails_blob_path(main_image, only_path: true)
+    begin
+      return nil unless has_main_image?
+      Rails.application.routes.url_helpers.rails_blob_path(main_image, only_path: true)
+    rescue => e
+      Rails.logger.error "Error getting main image URL: #{e.message}"
+      return nil
+    end
   end
   
   def extract_main_image_from_powerpoint!
@@ -105,9 +126,49 @@ class Portfolio < ApplicationRecord
     PowerpointImageExtractorService.new(self, latest_powerpoint).extract_main_image
   end
 
+  def extract_all_slide_images_from_powerpoints!
+    return false unless has_powerpoints?
+    
+    powerpoints.each do |powerpoint|
+      next unless powerpoint.file.attached?
+      
+      puts "Extracting slides from PowerPoint: #{powerpoint.filename}"
+      service = PowerpointImageExtractorService.new(self, powerpoint)
+      success = service.extract_all_slide_images
+      
+      if success
+        puts "Successfully extracted slides from #{powerpoint.filename}"
+      else
+        puts "Failed to extract slides from #{powerpoint.filename}"
+      end
+    end
+    
+    # 最初のスライドからメイン画像も抽出
+    if slides.any?
+      first_slide = slides.order(:page_number).first
+      if first_slide&.image&.attached?
+        puts "Setting main image from first slide"
+        first_slide.image.blob.open do |img_file|
+          main_image.attach(
+            io: img_file,
+            filename: "main_#{first_slide.image.filename}",
+            content_type: first_slide.image.content_type
+          )
+        end
+      end
+    end
+    
+    true
+  end
+
   # その他の公開メソッド
   def likes_count
-    0  # 固定値を返す
+    begin
+      likes.count
+    rescue => e
+      Rails.logger.error "Error getting likes count: #{e.message}"
+      return 0
+    end
   end
   
   def toggle_publication!
@@ -155,8 +216,8 @@ class Portfolio < ApplicationRecord
       end
     end
     
-    # PowerPointファイル処理後にメイン画像を抽出
-    extract_main_image_from_powerpoint!
+    # PowerPointファイル処理後にスライド画像を生成
+    extract_all_slide_images_from_powerpoints!
 
     puts "Finished processing PowerPoint files. Total saved: #{powerpoints.count}"
   end

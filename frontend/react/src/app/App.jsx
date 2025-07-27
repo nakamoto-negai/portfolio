@@ -7,15 +7,17 @@ import { AuthProvider, useAuth } from '../hooks/useAuth';
 import SlideEditor from '../components/SlideEditor/SlideEditor.jsx';
 import ProfilePage from '../components/Profile/ProfilePage.jsx';
 import ProfileEdit from '../components/Profile/ProfileEdit.jsx';
+import PortfolioGallery from '../components/Portfolio/PortfolioGallery.jsx';
+import ConnectPage from '../components/Portfolio/ConnectPage.jsx';
 
 const AppRoutes = () => {
   return (
     <div className="App">
       <Routes>
         <Route path="/" element={<Lpsite />} />
-        <Route path="/gallery" element={<Lpsite />} />
+        <Route path="/gallery" element={<PortfolioGallery />} />
         <Route path="/SlideEditor" element={<SlideEditor />} />
-        <Route path="/contact" element={<Lpsite />} />
+        <Route path="/contact" element={<ConnectPage />} />
         <Route path="/login" element={
           <Login />} />
         <Route path="/register" element={
