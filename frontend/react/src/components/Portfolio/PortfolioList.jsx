@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMyPortfolios } from '../../api/portfolios';
+import { getPublishedPortfolios } from '../../api/portfolios';
 import './PortfolioList.css';
 
 const PortfolioList = () => {
@@ -16,7 +16,7 @@ const PortfolioList = () => {
   const fetchPortfolios = async () => {
     try {
       setLoading(true);
-      const response = await getMyPortfolios();
+      const response = await getPublishedPortfolios();
       setPortfolios(response.data);
     } catch (error) {
       console.error('Error fetching portfolios:', error);
@@ -32,6 +32,10 @@ const PortfolioList = () => {
 
   const handleCreateNew = () => {
     navigate('/gallery');
+  };
+
+  const handleGoHome = () => {
+    navigate('/');
   };
 
   const formatFileSize = (bytes) => {
@@ -72,9 +76,18 @@ const PortfolioList = () => {
     <div className="portfolio-list-container">
       <div className="list-wrapper">
         <header className="list-header">
-          <div className="header-content">
-            <h1 className="list-title">ポートフォリオ一覧</h1>
-            <p className="list-subtitle">あなたの作品を一覧で確認・管理できます</p>
+          <div className="header-left">
+            <button onClick={handleGoHome} className="home-button">
+              <svg className="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9,22 9,12 15,12 15,22"></polyline>
+              </svg>
+              ホーム
+            </button>
+            <div className="header-content">
+              <h1 className="list-title">公開ポートフォリオ一覧</h1>
+              <p className="list-subtitle">他のユーザーが公開している作品を閲覧できます</p>
+            </div>
           </div>
           <button onClick={handleCreateNew} className="create-button">
             <svg className="create-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -93,9 +106,9 @@ const PortfolioList = () => {
                 <circle cx="8.5" cy="8.5" r="1.5"></circle>
                 <polyline points="21,15 16,10 5,21"></polyline>
               </svg>
-              <h3 className="empty-title">ポートフォリオがありません</h3>
+              <h3 className="empty-title">公開ポートフォリオがありません</h3>
               <p className="empty-description">
-                最初のポートフォリオを作成してみましょう！
+                まだ公開されているポートフォリオがありません。
               </p>
               <button onClick={handleCreateNew} className="empty-create-button">
                 新規作成
@@ -191,30 +204,19 @@ const PortfolioList = () => {
                     className="action-button view-button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handlePortfolioClick(portfolio.id);
+                      navigate(`/portfolio/${portfolio.id}/slideshow`);
                     }}
                   >
                     表示
                   </button>
-                  {portfolio.powerpoints_count > 0 && (
-                    <button 
-                      className="action-button powerpoint-button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/portfolio/${portfolio.id}/powerpoints`);
-                      }}
-                    >
-                      PowerPoint ({portfolio.powerpoints_count})
-                    </button>
-                  )}
                   <button 
-                    className="action-button edit-button"
+                    className="action-button detail-button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/portfolio/${portfolio.id}/edit`);
+                      handlePortfolioClick(portfolio.id);
                     }}
                   >
-                    編集
+                    詳細
                   </button>
                 </div>
               </div>

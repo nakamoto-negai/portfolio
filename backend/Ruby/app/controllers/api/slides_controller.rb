@@ -8,7 +8,10 @@ module Api
     # スライド一覧取得
     def index
       @slides = @portfolio.slides.order(:page_number)
-      render json: @slides
+      render json: @slides.as_json(
+        only: [:id, :page_number, :created_at, :updated_at],
+        methods: [:image_url, :has_image?]
+      )
     end
 
     # POST /api/v1/portfolios/:portfolio_id/slides

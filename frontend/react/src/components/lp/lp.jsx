@@ -67,9 +67,9 @@ const Lpsite = () => {
         // メッセージページへ遷移
         navigate('/messages')
         break;
-      case 'contact':
+      case 'my-portfolios':
         // 自分の作品一覧へ遷移
-        navigate('/contact')
+        navigate('/my-portfolios')
         break;
       case 'home':
         // ホームページへ遷移
@@ -108,7 +108,7 @@ const Lpsite = () => {
           {user ? (
             <div>
               <span className="nav-link"
-                onClick={() => handleNavigation('portfolios')}
+                onClick={() => handleNavigation('my-portfolios')}
               >
                 {user.name}
               </span>

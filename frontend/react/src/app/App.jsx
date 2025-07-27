@@ -10,7 +10,9 @@ import ProfileEdit from '../components/Profile/ProfileEdit.jsx';
 import PortfolioUpload from '../components/Portfolio/PortfolioUpload.jsx';
 import PortfolioList from '../components/Portfolio/PortfolioList.jsx';
 import PublicPortfolioList from '../components/Portfolio/PublicPortfolioList.jsx';
+import MyPortfolioList from '../components/Portfolio/MyPortfolioList.jsx';
 import PortfolioDetail from '../components/Portfolio/PortfolioDetail.jsx';
+import SlideShow from '../components/Portfolio/SlideShow.jsx';
 
 const AppRoutes = () => {
   return (
@@ -28,8 +30,10 @@ const AppRoutes = () => {
         <Route path="/messages" element={<MessagesPage />} />
         <Route path="/contact" element={<PortfolioList />} />
         <Route path="/portfolios" element={<PublicPortfolioList />} />
+        <Route path="/my-portfolios" element={<MyPortfolioList />} />
         <Route path="/gallery" element={<PortfolioUpload />} />
         <Route path="/portfolio/:id" element={<PortfolioDetail />} />
+        <Route path="/portfolio/:id/slideshow" element={<SlideShow />} />
       </Routes>
     </div>
   )

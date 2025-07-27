@@ -11,11 +11,19 @@ module Api
     end
 
     # GET /api/v1/portfolios/published
-    # 公開ポートフォリオ一覧取得
+    # 公開ポートフォリオ一覧取得（自分以外のユーザーの作品のみ）
     def published
-      @portfolios = Portfolio.published.includes(:user).recent
+      if current_user
+        # ログイン中の場合は自分以外のポートフォリオを表示
+        @portfolios = Portfolio.published.includes(:user, :slides, :powerpoints).where.not(user: current_user).recent
+      else
+        # 未ログインの場合は全ての公開ポートフォリオを表示
+        @portfolios = Portfolio.published.includes(:user, :slides, :powerpoints).recent
+      end
+      
       render json: @portfolios.as_json(
-        only: [:id, :title, :description, :created_at, :updated_at, :user_id],
+        only: [:id, :title, :description, :is_public, :created_at, :updated_at, :user_id],
+        include: { user: { only: [:id, :name] } },
         methods: [
           :slides_count, 
           :powerpoints_count, 
@@ -76,10 +84,20 @@ module Api
       
       if @portfolio.save
         if params[:portfolio][:powerpoint_files]
+          # 既存のスライドをクリア（重複を避けるため）
+          @portfolio.slides.destroy_all
+          Rails.logger.info "Cleared existing slides for portfolio #{@portfolio.id}"
+          
           # 1つ目のファイルをPowerPointモデルとして保存
           powerpoint = @portfolio.powerpoints.create(file: params[:portfolio][:powerpoint_files].first)
-          PowerpointImageExtractorService.new(@portfolio, powerpoint).extract_main_image
-          PowerpointImageExtractorService.new(@portfolio, powerpoint).extract_all_slide_images
+          Rails.logger.info "Created powerpoint record with ID: #{powerpoint.id}"
+          
+          # メイン画像とすべてのスライドを抽出
+          main_result = PowerpointImageExtractorService.new(@portfolio, powerpoint).extract_main_image
+          Rails.logger.info "Main image extraction result: #{main_result}"
+          
+          slides_result = PowerpointImageExtractorService.new(@portfolio, powerpoint).extract_all_slide_images
+          Rails.logger.info "All slides extraction result: #{slides_result}"
         end
         render json: @portfolio, status: :created
       else

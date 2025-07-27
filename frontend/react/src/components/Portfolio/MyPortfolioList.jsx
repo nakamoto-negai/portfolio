@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getPublishedPortfolios } from '../../api/portfolios';
-import { useAuth } from '../../hooks/useAuth';
+import { getMyPortfolios, deletePortfolio } from '../../api/portfolios';
 import './PortfolioList.css';
 
-const PublicPortfolioList = () => {
+const MyPortfolioList = () => {
   const [portfolios, setPortfolios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   useEffect(() => {
     fetchPortfolios();
@@ -18,7 +16,7 @@ const PublicPortfolioList = () => {
   const fetchPortfolios = async () => {
     try {
       setLoading(true);
-      const response = await getPublishedPortfolios();
+      const response = await getMyPortfolios();
       setPortfolios(response.data);
     } catch (error) {
       console.error('Error fetching portfolios:', error);
@@ -32,9 +30,26 @@ const PublicPortfolioList = () => {
     navigate(`/portfolio/${portfolioId}`);
   };
 
-  const handleSendMessage = (e, userId) => {
-    e.stopPropagation();
-    navigate(`/messages?partner_id=${userId}`);
+  const handleCreateNew = () => {
+    navigate('/gallery');
+  };
+
+  const handleDelete = async (portfolioId, portfolioTitle) => {
+    if (window.confirm(`「${portfolioTitle}」を削除しますか？この操作は取り消せません。`)) {
+      try {
+        await deletePortfolio(portfolioId);
+        alert('ポートフォリオが削除されました。');
+        // 一覧を再取得
+        fetchPortfolios();
+      } catch (error) {
+        console.error('Error deleting portfolio:', error);
+        alert('削除に失敗しました。もう一度お試しください。');
+      }
+    }
+  };
+
+  const handleGoHome = () => {
+    navigate('/');
   };
 
   const formatFileSize = (bytes) => {
@@ -45,10 +60,6 @@ const PublicPortfolioList = () => {
   const truncateText = (text, length = 100) => {
     if (!text) return '';
     return text.length > length ? text.substring(0, length) + '...' : text;
-  };
-
-  const isMyPortfolio = (portfolioUserId) => {
-    return user && user.id === portfolioUserId;
   };
 
   if (loading) {
@@ -79,10 +90,26 @@ const PublicPortfolioList = () => {
     <div className="portfolio-list-container">
       <div className="list-wrapper">
         <header className="list-header">
-          <div className="header-content">
-            <h1 className="list-title">公開ポートフォリオ一覧</h1>
-            <p className="list-subtitle">みんなの作品を見て交流しよう</p>
+          <div className="header-left">
+            <button onClick={handleGoHome} className="home-button">
+              <svg className="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9,22 9,12 15,12 15,22"></polyline>
+              </svg>
+              ホーム
+            </button>
+            <div className="header-content">
+              <h1 className="list-title">マイポートフォリオ</h1>
+              <p className="list-subtitle">あなたの作品を一覧で確認・管理できます</p>
+            </div>
           </div>
+          <button onClick={handleCreateNew} className="create-button">
+            <svg className="create-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            新規作成
+          </button>
         </header>
 
         {portfolios.length === 0 ? (
@@ -93,10 +120,13 @@ const PublicPortfolioList = () => {
                 <circle cx="8.5" cy="8.5" r="1.5"></circle>
                 <polyline points="21,15 16,10 5,21"></polyline>
               </svg>
-              <h3 className="empty-title">公開ポートフォリオがありません</h3>
+              <h3 className="empty-title">ポートフォリオがありません</h3>
               <p className="empty-description">
-                まだ公開されているポートフォリオがありません。
+                最初のポートフォリオを作成してみましょう！
               </p>
+              <button onClick={handleCreateNew} className="empty-create-button">
+                新規作成
+              </button>
             </div>
           </div>
         ) : (
@@ -123,20 +153,19 @@ const PublicPortfolioList = () => {
                       </svg>
                     </div>
                   )}
-                  <div className="public-badge">
-                    <svg className="public-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <circle cx="12" cy="12" r="6"></circle>
-                      <circle cx="12" cy="12" r="2"></circle>
-                    </svg>
-                    公開
-                  </div>
+                  {portfolio.is_public && (
+                    <div className="public-badge">
+                      <svg className="public-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="6"></circle>
+                        <circle cx="12" cy="12" r="2"></circle>
+                      </svg>
+                      公開
+                    </div>
+                  )}
                 </div>
 
                 <div className="card-content">
-                  <div className="portfolio-author">
-                    <span className="author-name">by {portfolio.user?.name || '匿名'}</span>
-                  </div>
                   <h3 className="card-title">{portfolio.title}</h3>
                   <p className="card-description">
                     {truncateText(portfolio.description)}
@@ -189,34 +218,29 @@ const PublicPortfolioList = () => {
                     className="action-button view-button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/portfolio/${portfolio.id}/slideshow`)
-                      // handlePortfolioClick(portfolio.id);
+                      navigate(`/portfolio/${portfolio.id}/slideshow`);
                     }}
                   >
                     表示
                   </button>
-                  {portfolio.powerpoints_count > 0 && (
-                    <button 
-                      className="action-button powerpoint-button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/portfolio/${portfolio.id}/powerpoints`);
-                      }}
-                    >
-                      PowerPoint ({portfolio.powerpoints_count})
-                    </button>
-                  )}
-                  {!isMyPortfolio(portfolio.user_id) && user && (
-                    <button 
-                      className="action-button message-button"
-                      onClick={(e) => handleSendMessage(e, portfolio.user_id)}
-                    >
-                      <svg className="message-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                      </svg>
-                      メッセージ
-                    </button>
-                  )}
+                  <button 
+                    className="action-button detail-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePortfolioClick(portfolio.id);
+                    }}
+                  >
+                    詳細
+                  </button>
+                  <button 
+                    className="action-button delete-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(portfolio.id, portfolio.title);
+                    }}
+                  >
+                    削除
+                  </button>
                 </div>
               </div>
             ))}
@@ -227,4 +251,4 @@ const PublicPortfolioList = () => {
   );
 };
 
-export default PublicPortfolioList;
+export default MyPortfolioList;
