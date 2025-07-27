@@ -27,7 +27,7 @@ const PortfolioList = () => {
   };
 
   const handlePortfolioClick = (portfolioId) => {
-    navigate(`/portfolio/${portfolioId}`);
+    navigate(`/portfolio/${portfolioId}`, { state: { from: '/portfolios' } });
   };
 
   const handleCreateNew = () => {
@@ -238,30 +238,6 @@ const PortfolioList = () => {
                     {truncateText(portfolio.description)}
                   </p>
 
-                  {portfolio.powerpoints_count > 0 && (
-                    <div className="powerpoint-info">
-                      <div className="info-header">
-                        <svg className="powerpoint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
-                          <polyline points="14,2 14,8 20,8"></polyline>
-                        </svg>
-                        <span className="info-label">PowerPointファイル</span>
-                      </div>
-                      <div className="info-details">
-                        <span className="file-count">
-                          {portfolio.powerpoints_count}個のファイル
-                        </span>
-                        <span className="file-size">
-                          {formatFileSize(portfolio.total_powerpoint_size)}
-                        </span>
-                      </div>
-                      {portfolio.latest_powerpoint_filename && (
-                        <div className="latest-file">
-                          最新: {truncateText(portfolio.latest_powerpoint_filename, 30)}
-                        </div>
-                      )}
-                    </div>
-                  )}
 
                   <div className="card-stats">
                     <div className="stat-item">
@@ -299,20 +275,6 @@ const PortfolioList = () => {
                   >
                     詳細
                   </button>
-                  {portfolio.user && (
-                    <button 
-                      className="action-button message-button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/messages?partner_id=${portfolio.user.id}`);
-                      }}
-                    >
-                      <svg className="message-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                      </svg>
-                      メッセージ
-                    </button>
-                  )}
                 </div>
               </div>
             ))}

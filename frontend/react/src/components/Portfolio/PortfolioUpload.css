@@ -168,6 +168,14 @@
   background: rgba(255, 255, 255, 0.03);
 }
 
+.file-upload-area.dragging {
+  background: rgba(181, 172, 152, 0.1);
+  border-color: #B5AC98;
+  border-width: 2px;
+  transform: scale(1.02);
+  box-shadow: 0 8px 25px rgba(181, 172, 152, 0.2);
+}
+
 .file-upload-label {
   cursor: pointer;
   display: block;

@@ -12,6 +12,7 @@ const PortfolioUpload = () => {
   });
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -26,8 +27,40 @@ const PortfolioUpload = () => {
     setSelectedFiles(files);
   };
 
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const files = Array.from(e.dataTransfer.files).filter(file => 
+      file.name.endsWith('.pptx') || file.name.endsWith('.ppt')
+    );
+    
+    if (files.length > 0) {
+      setSelectedFiles(files);
+    } else {
+      alert('PowerPointファイル（.pptxまたは.ppt）を選択してください。');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // 説明が入力されていない場合のバリデーション
+    if (!formData.description.trim()) {
+      alert('説明は必須です。');
+      return;
+    }
+    
     setIsUploading(true);
 
     try {
@@ -95,6 +128,7 @@ const PortfolioUpload = () => {
                 rows={4}
                 className="form-textarea"
                 placeholder="ポートフォリオの説明を入力してください"
+                required
               />
             </div>
 
@@ -118,7 +152,12 @@ const PortfolioUpload = () => {
           <div className="form-section">
             <h2 className="section-title">PowerPointファイル</h2>
             
-            <div className="file-upload-area">
+            <div 
+              className={`file-upload-area ${isDragging ? 'dragging' : ''}`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
               <label htmlFor="files" className="file-upload-label">
                 <div className="file-upload-content">
                   <svg className="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMyPortfolios, deletePortfolio } from '../../api/portfolios';
+import { getMyPortfolios } from '../../api/portfolios';
 import './PortfolioList.css';
 
 const MyPortfolioList = () => {
@@ -27,26 +27,13 @@ const MyPortfolioList = () => {
   };
 
   const handlePortfolioClick = (portfolioId) => {
-    navigate(`/portfolio/${portfolioId}`);
+    navigate(`/portfolio/${portfolioId}`, { state: { from: '/my-portfolios' } });
   };
 
   const handleCreateNew = () => {
     navigate('/gallery');
   };
 
-  const handleDelete = async (portfolioId, portfolioTitle) => {
-    if (window.confirm(`「${portfolioTitle}」を削除しますか？この操作は取り消せません。`)) {
-      try {
-        await deletePortfolio(portfolioId);
-        alert('ポートフォリオが削除されました。');
-        // 一覧を再取得
-        fetchPortfolios();
-      } catch (error) {
-        console.error('Error deleting portfolio:', error);
-        alert('削除に失敗しました。もう一度お試しください。');
-      }
-    }
-  };
 
   const handleGoHome = () => {
     navigate('/');
@@ -171,30 +158,6 @@ const MyPortfolioList = () => {
                     {truncateText(portfolio.description)}
                   </p>
 
-                  {portfolio.powerpoints_count > 0 && (
-                    <div className="powerpoint-info">
-                      <div className="info-header">
-                        <svg className="powerpoint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
-                          <polyline points="14,2 14,8 20,8"></polyline>
-                        </svg>
-                        <span className="info-label">PowerPointファイル</span>
-                      </div>
-                      <div className="info-details">
-                        <span className="file-count">
-                          {portfolio.powerpoints_count}個のファイル
-                        </span>
-                        <span className="file-size">
-                          {formatFileSize(portfolio.total_powerpoint_size)}
-                        </span>
-                      </div>
-                      {portfolio.latest_powerpoint_filename && (
-                        <div className="latest-file">
-                          最新: {truncateText(portfolio.latest_powerpoint_filename, 30)}
-                        </div>
-                      )}
-                    </div>
-                  )}
 
                   <div className="card-stats">
                     <div className="stat-item">
@@ -231,15 +194,6 @@ const MyPortfolioList = () => {
                     }}
                   >
                     詳細
-                  </button>
-                  <button 
-                    className="action-button delete-button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(portfolio.id, portfolio.title);
-                    }}
-                  >
-                    削除
                   </button>
                 </div>
               </div>

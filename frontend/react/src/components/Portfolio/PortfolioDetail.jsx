@@ -1,20 +1,35 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getPortfolio } from '../../api/portfolios';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { getPortfolio, updatePortfolio, deletePortfolio } from '../../api/portfolios';
 import { useAuth } from '../../hooks/useAuth';
 import './PortfolioDetail.css';
 
 const PortfolioDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [portfolio, setPortfolio] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     fetchPortfolio();
   }, [id]);
+
+  // Determine return path based on state or portfolio ownership
+  const getReturnPath = () => {
+    if (location.state?.from) {
+      return location.state.from;
+    }
+    // If user owns the portfolio, return to my-portfolios
+    if (portfolio && user && portfolio.user && user.id === portfolio.user.id) {
+      return '/my-portfolios';
+    }
+    return '/portfolios';
+  };
 
   const fetchPortfolio = async () => {
     try {
@@ -26,6 +41,34 @@ const PortfolioDetail = () => {
       setError(error.response?.data?.error || 'ポートフォリオの取得に失敗しました');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVisibilityToggle = async (isPublic) => {
+    try {
+      setIsUpdating(true);
+      await updatePortfolio(portfolio.id, { is_public: isPublic });
+      setPortfolio({ ...portfolio, is_public: isPublic });
+      setShowEditModal(false);
+      alert(`ポートフォリオを${isPublic ? '公開' : '非公開'}に設定しました。`);
+    } catch (error) {
+      console.error('Error updating portfolio:', error);
+      alert('更新に失敗しました。もう一度お試しください。');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm(`「${portfolio.title}」を削除しますか？この操作は取り消せません。`)) {
+      try {
+        await deletePortfolio(portfolio.id);
+        alert('ポートフォリオが削除されました。');
+        navigate('/my-portfolios');
+      } catch (error) {
+        console.error('Error deleting portfolio:', error);
+        alert('削除に失敗しました。もう一度お試しください。');
+      }
     }
   };
 
@@ -45,7 +88,7 @@ const PortfolioDetail = () => {
       <div className="portfolio-detail-container">
         <div className="error-wrapper">
           <p className="error-text">エラー: {error}</p>
-          <button onClick={() => navigate('/portfolios')} className="back-button">
+          <button onClick={() => navigate(getReturnPath())} className="back-button">
             一覧に戻る
           </button>
         </div>
@@ -58,7 +101,7 @@ const PortfolioDetail = () => {
       <div className="portfolio-detail-container">
         <div className="error-wrapper">
           <p className="error-text">ポートフォリオが見つかりません</p>
-          <button onClick={() => navigate('/portfolios')} className="back-button">
+          <button onClick={() => navigate(getReturnPath())} className="back-button">
             一覧に戻る
           </button>
         </div>
@@ -71,9 +114,19 @@ const PortfolioDetail = () => {
 
   return (
     <div className="portfolio-detail-container">
+      {portfolio.is_public && (
+        <div className="public-badge-fixed">
+          <svg className="public-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="6"></circle>
+            <circle cx="12" cy="12" r="2"></circle>
+          </svg>
+          公開中
+        </div>
+      )}
       <div className="detail-wrapper">
         <header className="detail-header">
-          <button onClick={() => navigate('/portfolios')} className="back-button">
+          <button onClick={() => navigate(getReturnPath())} className="back-button">
             <svg className="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path d="M19 12H5"></path>
               <polyline points="12,19 5,12 12,5"></polyline>
@@ -84,21 +137,11 @@ const PortfolioDetail = () => {
           <div className="header-actions">
             {isOwner && (
               <button 
-                onClick={() => navigate(`/portfolio/${portfolio.id}/edit`)}
+                onClick={() => setShowEditModal(true)}
                 className="edit-button"
               >
                 編集
               </button>
-            )}
-            {portfolio.is_public && (
-              <span className="public-badge">
-                <svg className="public-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <circle cx="12" cy="12" r="6"></circle>
-                  <circle cx="12" cy="12" r="2"></circle>
-                </svg>
-                公開中
-              </span>
             )}
           </div>
         </header>
@@ -157,18 +200,6 @@ const PortfolioDetail = () => {
                 </div>
               </div>
 
-              <div className="stat-card">
-                <div className="stat-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
-                    <polyline points="14,2 14,8 20,8"></polyline>
-                  </svg>
-                </div>
-                <div className="stat-content">
-                  <span className="stat-value">{portfolio.powerpoints_count || 0}</span>
-                  <span className="stat-label">PowerPoint</span>
-                </div>
-              </div>
 
               <div className="stat-card">
                 <div className="stat-icon">
@@ -187,18 +218,6 @@ const PortfolioDetail = () => {
           <div className="actions-section">
             <h2 className="section-title">アクション</h2>
             <div className="action-buttons">
-              {portfolio.powerpoints_count > 0 && (
-                <button 
-                  onClick={() => navigate(`/portfolio/${portfolio.id}/powerpoints`)}
-                  className="action-btn powerpoint-btn"
-                >
-                  <svg className="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
-                    <polyline points="14,2 14,8 20,8"></polyline>
-                  </svg>
-                  PowerPointファイルを表示 ({portfolio.powerpoints_count})
-                </button>
-              )}
               
               {portfolio.slides_count > 0 && (
                 <button 
@@ -213,16 +232,28 @@ const PortfolioDetail = () => {
               )}
               
               {isOwner && (
-                <button 
-                  onClick={() => navigate(`/portfolio/${portfolio.id}/edit`)}
-                  className="action-btn edit-btn"
-                >
-                  <svg className="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
-                  編集
-                </button>
+                <>
+                  <button 
+                    onClick={() => setShowEditModal(true)}
+                    className="action-btn edit-btn"
+                  >
+                    <svg className="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    編集
+                  </button>
+                  <button 
+                    onClick={() => handleDelete()}
+                    className="action-btn delete-btn"
+                  >
+                    <svg className="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    削除
+                  </button>
+                </>
               )}
               
               {!isOwner && portfolio.user && (
@@ -240,6 +271,81 @@ const PortfolioDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* 編集モーダル */}
+      {showEditModal && (
+        <div className="modal-overlay" onClick={() => !isUpdating && setShowEditModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">公開設定の変更</h2>
+              <button 
+                className="modal-close"
+                onClick={() => !isUpdating && setShowEditModal(false)}
+                disabled={isUpdating}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <p className="modal-description">
+                このポートフォリオの公開設定を選択してください。
+              </p>
+              
+              <div className="visibility-options">
+                <button
+                  className={`visibility-option ${portfolio.is_public ? 'active' : ''}`}
+                  onClick={() => handleVisibilityToggle(true)}
+                  disabled={isUpdating}
+                >
+                  <div className="option-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <circle cx="12" cy="12" r="6"></circle>
+                      <circle cx="12" cy="12" r="2"></circle>
+                    </svg>
+                  </div>
+                  <div className="option-content">
+                    <h3 className="option-title">公開</h3>
+                    <p className="option-description">
+                      他のユーザーがこのポートフォリオを閲覧できます
+                    </p>
+                  </div>
+                  {portfolio.is_public && (
+                    <div className="option-status">現在の設定</div>
+                  )}
+                </button>
+                
+                <button
+                  className={`visibility-option ${!portfolio.is_public ? 'active' : ''}`}
+                  onClick={() => handleVisibilityToggle(false)}
+                  disabled={isUpdating}
+                >
+                  <div className="option-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                      <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                  </div>
+                  <div className="option-content">
+                    <h3 className="option-title">非公開</h3>
+                    <p className="option-description">
+                      自分だけがこのポートフォリオを閲覧できます
+                    </p>
+                  </div>
+                  {!portfolio.is_public && (
+                    <div className="option-status">現在の設定</div>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
