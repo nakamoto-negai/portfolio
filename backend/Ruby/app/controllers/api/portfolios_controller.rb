@@ -28,10 +28,18 @@ module Api
         return
       end
       
-      @portfolios = current_user.portfolios.includes(:slides).recent
+      @portfolios = current_user.portfolios.includes(:slides, :powerpoints).recent
       render json: @portfolios.as_json(
         only: [:id, :title, :description, :is_public, :created_at, :updated_at],
-        methods: [:slides_count]
+        methods: [
+          :slides_count, 
+          :powerpoints_count, 
+          :total_powerpoint_size, 
+          :latest_powerpoint_filename,
+          :likes_count,
+          :has_main_image?,
+          :main_image_url
+        ]
       )
     end
 
@@ -46,8 +54,24 @@ module Api
 
     # POST /api/v1/portfolios
     def create
+      unless current_user
+        render json: { error: 'ログインが必要です' }, status: :unauthorized
+        return
+      end
+      
       @portfolio = Portfolio.new(portfolio_params)
+      @portfolio.user = current_user
+      
+      # PowerPointファイルを一時的に保存
+      @portfolio.powerpoint_files = params[:portfolio][:powerpoint_files] if params[:portfolio][:powerpoint_files]
+      
       if @portfolio.save
+        if params[:portfolio][:powerpoint_files]
+          # 1つ目のファイルをPowerPointモデルとして保存
+          powerpoint = @portfolio.powerpoints.create(file: params[:portfolio][:powerpoint_files].first)
+          PowerpointImageExtractorService.new(@portfolio, powerpoint).extract_main_image
+          PowerpointImageExtractorService.new(@portfolio, powerpoint).extract_all_slide_images
+        end
         render json: @portfolio, status: :created
       else
         render json: @portfolio.errors, status: :unprocessable_entity
