@@ -1,7 +1,11 @@
 import React, { useState, useRef, useCallback } from 'react';
+import { createPortfolio } from '../../api/portfolios';
+import { useAuth } from '../../hooks/useAuth';
 import './SlideEditor.css';
 
 const SlideEditor = () => {
+  const { user } = useAuth();
+  
   // スライドのデータ構造
   const [slides, setSlides] = useState([
     {
@@ -61,6 +65,7 @@ const SlideEditor = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -1886,6 +1891,12 @@ const SlideEditor = () => {
               disabled={isExporting}
             >
               {isExporting ? '📥 生成中...' : '📥 PowerPoint出力'}
+            </button>
+            <button 
+              className="publish-btn"
+              onClick={() => window.location.href = '/gallery'}
+            >
+              📤 投稿
             </button>
           </div>
           
