@@ -15,3 +15,10 @@ RUN apt-get update --fix-missing && \
     fc-cache -fv && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+    
+RUN apt-get update && apt-get install -y \
+    libreoffice \
+    imagemagick \
+    fonts-dejavu \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
